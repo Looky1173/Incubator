@@ -1,0 +1,14 @@
+[
+    {
+        "title": "Message Count Tracker",
+        "slug": "message-count-tracker",
+        "description": "Keeps historical data of Scratchers' message counts over time and generates a leaderboard of the Scratchers with the most message counts.",
+        "releaseDate": "Sat Apr 02 2022 17:21:14 GMT+0200"
+    },
+    {
+        "title": "Who unfollowed me?",
+        "slug": "who-unfollowed-me",
+        "description": "Find out who unfollowed you on Scratch, including deleted accounts that are no longer following you!",
+        "disabled": true
+    }
+]
