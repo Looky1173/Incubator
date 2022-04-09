@@ -73,6 +73,11 @@ function Header({ withSecondaryHeader }) {
                     >
                         <Text>GitHub</Text>
                     </Link>
+                    {user === undefined && (
+                            <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' }, width: '7rem' }}>
+                                {<Skeleton />}
+                            </Link>
+                    )}
                     {user?.isLoggedIn === false && (
                         <NextLink href="/api/auth/login" passHref>
                             <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' } }}>
