@@ -1,7 +1,7 @@
 import { UIProvider } from '@design-system/theme';
 import { createTheme } from '@design-system/theme/stitches.config';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
-import Head from 'next/head';
+import Script from 'next/script';
 
 import { CustomToastProvider, ToastContainer } from '@design-system';
 
@@ -19,9 +19,7 @@ const darkTheme = createTheme({
 function MyApp({ Component, pageProps }) {
     return (
         <>
-            <Head>
-                <script async defer data-website-id="77abe5c5-6a80-46c5-a574-44eeb19fd6de" src="https://umami-production-dc41.up.railway.app/umami.js" />
-            </Head>
+            <Script data-website-id="77abe5c5-6a80-46c5-a574-44eeb19fd6de" data-domains="beta.itinerary.eu.org" src="https://umami-production-dc41.up.railway.app/umami.js" />
             <SWRConfig
                 value={{
                     fetcher: fetchJson,
