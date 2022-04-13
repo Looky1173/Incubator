@@ -16,7 +16,9 @@ function ErrorFallback({ error }) {
                 This image could not be loaded!
             </Heading>
             <br />
-            <Text css={{color: 'inherit', textAlign: 'center'}}>Images are only accepted from <i>assets.scratch.mit.edu</i>! Check the console for details.</Text>
+            <Text css={{ color: 'inherit', textAlign: 'center' }}>
+                Images are only accepted from <i>assets.scratch.mit.edu</i>! Check the console for details.
+            </Text>
         </Flex>
     );
 }
@@ -38,6 +40,9 @@ function Jam({ loading = false, data }) {
                             objectFit="cover"
                             className={jamThumbnail()}
                             onLoadingComplete={() => setLoadingThumbnail(false)}
+                            onError={() => {
+                                throw new Error('Could not load thumbnail');
+                            }}
                         />
                     </Box>
                 )}
