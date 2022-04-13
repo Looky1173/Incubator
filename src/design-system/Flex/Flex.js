@@ -62,6 +62,9 @@ const Flex = styled('div', {
             },
         },
         gap: {
+            0: {
+                gap: 0,
+            },
             1: {
                 gap: '$1',
             },

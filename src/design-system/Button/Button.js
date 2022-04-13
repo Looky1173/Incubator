@@ -7,7 +7,6 @@ const Button = styled('button', {
     WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
     backgroundColor: 'transparent',
     fontFamily: '$sans',
-    borderRadius: '9999px',
     lineHeight: 1,
     fontWeight: 600,
     textDecoration: 'none',
@@ -15,14 +14,12 @@ const Button = styled('button', {
     alignItems: 'center',
     userSelect: 'none',
     fontSize: '$4',
-    height: '$7',
-    px: '$4',
     transition: 'background-color 300ms ease',
 
     '&:disabled': {
         pointerEvents: 'none',
         color: '$neutral8',
-        backgroundColor: '$neutral3'
+        backgroundColor: '$neutral3',
     },
 
     variants: {
@@ -77,12 +74,25 @@ const Button = styled('button', {
                 '&:focus': {
                     boxShadow: '0 0 0 1px $colors$danger8, inset 0 0 0 1px $colors$danger8',
                 },
-            }
+            },
+        },
+        size: {
+            small: {
+                borderRadius: '$2',
+                height: '$5',
+                px: '$2',
+            },
+            base: {
+                borderRadius: '9999px',
+                height: '$7',
+                px: '$4',
+            },
         },
     },
 
     defaultVariants: {
         variant: 'base',
+        size: 'base',
     },
 });
 

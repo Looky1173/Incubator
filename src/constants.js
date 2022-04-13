@@ -8,4 +8,7 @@ export const sessionOptions = {
 
 export const databaseCollections = {
     users: 'users',
+    'scratch-jams': 'jams',
 };
+
+export const fetcher = (...args) => fetch(...args).then((res) => res.json());

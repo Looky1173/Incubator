@@ -6,7 +6,7 @@ import { useUser } from '@hooks';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import fetchJson from '@utils/fetch-json';
 
-function Header({ withSecondaryHeader }) {
+function Header({ withSecondaryHeader, secondaryHeader }) {
     const { user, mutateUser } = useUser();
 
     return (
@@ -74,9 +74,9 @@ function Header({ withSecondaryHeader }) {
                         <Text>GitHub</Text>
                     </Link>
                     {user === undefined && (
-                            <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' }, width: '7rem' }}>
-                                {<Skeleton />}
-                            </Link>
+                        <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' }, width: '7rem' }}>
+                            {<Skeleton />}
+                        </Link>
                     )}
                     {user?.isLoggedIn === false && (
                         <NextLink href="/api/auth/login" passHref>
@@ -128,10 +128,9 @@ function Header({ withSecondaryHeader }) {
                 </Flex>
             </Flex>
             {withSecondaryHeader === true && (
-                <Container size="2">
+                <Container size="3">
                     <Flex
                         css={{
-                            mx: '$4',
                             px: '$4',
                             py: '$2',
                             backgroundColor: '$card2',
@@ -139,11 +138,16 @@ function Header({ withSecondaryHeader }) {
                             border: '2px solid $colors$neutral6',
                         }}
                     >
-                        <Heading as="h2">Scratch Game Jams</Heading>
-                        <Separator orientation="vertical" css={{ mx: '$2', '&[data-orientation=vertical]': { width: '2px', height: 'initial' } }} />
-                        <Heading as="h3" css={{ fontWeight: 400 }}>
-                            Explore
-                        </Heading>
+                        <Heading as="h2">{secondaryHeader?.title}</Heading>
+                        {secondaryHeader.subtitle && (
+                            <>
+                                <Separator orientation="vertical" css={{ mx: '$2', '&[data-orientation=vertical]': { width: '2px', height: 'initial' } }} />
+                                <Heading as="h3" css={{ fontWeight: 400 }}>
+                                    {secondaryHeader?.subtitle}
+                                </Heading>
+                            </>
+                        )}
+                        {secondaryHeader.controls && secondaryHeader.controls}
                     </Flex>
                 </Container>
             )}

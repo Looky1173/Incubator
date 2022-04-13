@@ -55,6 +55,7 @@ function styleOptionsToCssObject({
 
     width,
     height,
+    aspectRatio,
     borderRadius,
     circle,
 
@@ -70,6 +71,7 @@ function styleOptionsToCssObject({
 
     if (typeof width === 'string' || typeof width === 'number') style.width = width;
     if (typeof height === 'string' || typeof height === 'number') style.height = height;
+    if (typeof aspectRatio === 'string' || typeof aspectRatio === 'number') style.aspectRatio = aspectRatio;
 
     if (typeof borderRadius === 'string' || typeof borderRadius === 'number') style.borderRadius = borderRadius;
 
@@ -131,7 +133,7 @@ const Skeleton = function ({ count = 1, wrapper: Wrapper, circle = false, style:
         }
     }
 
-    return <SkeletonSpan>{Wrapper ? elements.map((el, i) => <Wrapper key={i}>{el}</Wrapper>) : elements}</SkeletonSpan>;
+    return <>{Wrapper ? elements.map((el, i) => <Wrapper key={i}>{el}</Wrapper>) : elements}</>;
 };
 
 const Provider = SkeletonProvider;

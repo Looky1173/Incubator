@@ -10,9 +10,14 @@ export { default as Box } from './Box';
 
 export { default as Button } from './Button';
 
+export { default as Card } from './Card';
+
 export { default as Container } from './Container';
 
 export { default as CSSBaseline } from './CSSBaseline';
+
+export { default as ErrorBoundary } from './ErrorBoundary';
+export * from './ErrorBoundary';
 
 export { default as Flex } from './Flex';
 
