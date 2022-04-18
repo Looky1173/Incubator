@@ -12,7 +12,7 @@ export default withIronSessionApiRoute(async (req, res) => {
     const privateCode = req.query.privateCode;
     const websiteURL = process.env.WEBSITE_URL;
 
-    let authResponse = await fetch('https://fluffyscratch.hampton.pw/auth/verify/v2/' + privateCode).catch((e) => {
+    let authResponse = await fetch('https://auth.itinerary.eu.org/api/auth/verifyToken?privateCode=' + privateCode).catch((e) => {
         console.log(e);
         return res.redirect(`${websiteURL}/?auth-error=1`);
     });
