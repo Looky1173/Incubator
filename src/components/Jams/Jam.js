@@ -1,12 +1,6 @@
-import { Box, Card, Flex, Heading, ErrorBoundary, Text, Skeleton, theme } from '@design-system';
-import Image from 'next/image';
-import { css } from '@design-system';
+import { Box, Card, Flex, Heading, Text, Skeleton, theme, styled } from '@design-system';
+import { imageDomains } from '@constants';
 import { useState } from 'react';
-
-const jamThumbnail = css({
-    btlr: '$4',
-    btrr: '$4',
-});
 
 function ErrorFallback({ error }) {
     console.error(error);
@@ -23,30 +17,37 @@ function ErrorFallback({ error }) {
     );
 }
 
-function Jam({ loading = false, data }) {
+const StyledThumbnail = styled('img', {
+    btlr: '$4',
+    btrr: '$4',
+    objectFit: 'cover',
+    aspectRatio: '16 / 9',
+});
+
+function Thumbnail({ image = 'https://assets.scratch.mit.edu', loading }) {
     const [loadingThumbnail, setLoadingThumbnail] = useState(true);
+    const { hostname } = new URL(image);
 
     return (
+        <>
+            {(loadingThumbnail === true || loading === true) && imageDomains.includes(hostname) && (
+                <Skeleton width="100%" aspectRatio="16 / 9" borderRadius={`${theme.radii[4]} ${theme.radii[4]} 0 0`} />
+            )}
+            {imageDomains.includes(hostname) ? (
+                <Box css={{ display: loadingThumbnail === true ? 'none' : 'auto' }}>
+                    <StyledThumbnail src={image} onLoad={() => setLoadingThumbnail(false)} />
+                </Box>
+            ) : (
+                <>{loading === false && <ErrorFallback />}</>
+            )}
+        </>
+    );
+}
+
+function Jam({ loading = false, data }) {
+    return (
         <Card as="a" href={loading === true ? '#' : 'https://itinerary.eu.org/jams/' + data.slug} variant="interactive">
-            <ErrorBoundary FallbackComponent={ErrorFallback}>
-                {loadingThumbnail === true && <Skeleton width="100%" aspectRatio="16 / 9" borderRadius={`${theme.radii[4]} ${theme.radii[4]} 0 0`} />}
-                {loading === false && (
-                    <Box css={{ width: loadingThumbnail === true ? '0' : 'auto' }}>
-                        <Image
-                            src={data.content.headerImage}
-                            width={1920}
-                            height={1080}
-                            layout="responsive"
-                            objectFit="cover"
-                            className={jamThumbnail()}
-                            onLoadingComplete={() => setLoadingThumbnail(false)}
-                            onError={() => {
-                                throw new Error('Could not load thumbnail');
-                            }}
-                        />
-                    </Box>
-                )}
-            </ErrorBoundary>
+            <Thumbnail image={data?.content?.headerImage} loading={loading} />
             <Box css={{ p: '$3' }}>
                 <Heading css={{ mb: '$2' }}>{loading === true ? <Skeleton width="60%" /> : data.name}</Heading>
                 <Text size="3" css={{ color: '$neutral11' }}>
