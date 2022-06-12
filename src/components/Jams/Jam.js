@@ -32,7 +32,7 @@ const StyledThumbnail = styled('img', {
     btrr: '$4',
     objectFit: 'cover',
     aspectRatio: '16 / 9',
-    width: '100%'
+    width: '100%',
 });
 
 function Thumbnail({ image, loading }) {
