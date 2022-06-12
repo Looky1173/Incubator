@@ -7,20 +7,21 @@ import { useRouter } from 'next/router';
 export default function Home() {
     const router = useRouter();
 
-    const [limit, setLimit] = useState(5);
+    const [limit, setLimit] = useState(6);
     const [isInitialized, setIsInitialized] = useState(false);
     const [jamsLength, setJamsLength] = useState(0);
 
     const { page, offset, lastPage, nextPage, previousPage, jumpToPage } = usePagination({
         limit: limit,
-        dataLength: 6,
+        dataLength: jamsLength,
+        isInitialized
     });
     const { data, isLoading, isError } = useJams(null, { limit: limit, offset: offset * limit }, isInitialized);
 
     useEffect(() => {
         if (router.isReady === true) {
-            setLimit(router.query.limit || 5);
-            jumpToPage(router.query.page || 1);
+            setLimit(router.query.limit || 6);
+            jumpToPage(Number(router.query.page || 1));
             setIsInitialized(true);
         }
     }, [router.isReady]);
@@ -28,6 +29,7 @@ export default function Home() {
     useEffect(() => {
         if (data) {
             setJamsLength(data.total);
+            console.log(data)
         }
     }, [data]);
 
@@ -59,7 +61,9 @@ export default function Home() {
                 subtitle: 'Explore',
                 controls: (
                     <Flex align="center" justify="end" css={{ ml: 'auto' }}>
-                        <Text css={{color: '$neutral11'}}>Page {page}/{lastPage}</Text>
+                        <Text css={{ color: '$neutral11' }}>
+                            Page {page}/{lastPage}
+                        </Text>
                         <Button size="small" variant="accent" css={{ ml: '$2' }} onClick={previousPage} disabled={page === 1}>
                             Previous
                         </Button>
@@ -74,8 +78,8 @@ export default function Home() {
             <Container size="3" css={{ my: '$8' }}>
                 {isInitialized === true && (
                     <Grid gap="4" columns={{ '@initial': 1, '@bp1': 2, '@bp2': 3 }}>
-                        {data !== undefined
-                            ? data.jams.map((jam, index) => <Jam key={index} data={jam} loading={isLoading} />)
+                        {isLoading === false && data !== undefined
+                            ? data.jams.map((jam, index) => <Jam key={index} data={jam} loading={false} />)
                             : [...Array(Number(limit))].map((value, index) => <Jam loading={true} key={index} />)}
                     </Grid>
                 )}

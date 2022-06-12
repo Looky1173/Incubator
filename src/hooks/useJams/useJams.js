@@ -11,7 +11,7 @@ const serialize = (obj) => {
     return str.join('&');
 };
 
-export default function useJams(jam = null, filters = { limit: 20 }, shouldFetch) {
+export default function useJams(jam = null, filters = { limit: 20, offset: 0 }, shouldFetch) {
     const { data, error } = useSWR(shouldFetch ? `/api/scratch-jams${jam === null ? '' : '/' + jam}${filters !== {} && '?' + serialize(filters)}` : null, fetcher);
 
     return {

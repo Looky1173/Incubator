@@ -16,9 +16,9 @@ export function getScratchGameJams(db, limit = 40, offset = 0, featured = null) 
 
             let jamsCount = await db.collection(databaseCollections['scratch-jams']).countDocuments({});
 
-            let jamsCursor = await db.collection(databaseCollections['scratch-jams']).find(filterQuery).sort({ 'dates.start': 'descending' }).skip(Number(offset)).limit(Number(limit));
-            let jams = await jamsCursor.toArray()
-            
+            let jamsCursor = await db.collection(databaseCollections['scratch-jams']).find(filterQuery).sort({ 'dates.start': -1, _id: -1 }).skip(Number(offset)).limit(Number(limit));
+            let jams = await jamsCursor.toArray();
+
             resolve({ total: jamsCount, jams: jams });
         } catch (error) {
             reject(Error(error));
