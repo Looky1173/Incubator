@@ -32,6 +32,7 @@ const StyledThumbnail = styled('img', {
     btrr: '$4',
     objectFit: 'cover',
     aspectRatio: '16 / 9',
+    width: '100%'
 });
 
 function Thumbnail({ image, loading }) {
@@ -58,7 +59,6 @@ function Thumbnail({ image, loading }) {
 
     return (
         <>
-            {error ? 'true' : 'false'}
             {(loadingThumbnail === true || loading === true) && error === false && <Skeleton width="100%" aspectRatio="16 / 9" borderRadius={`${theme.radii[4]} ${theme.radii[4]} 0 0`} />}
             {imageDomains.includes(hostname) && error === false ? (
                 <Box css={{ display: loadingThumbnail === true ? 'none' : 'auto' }}>
