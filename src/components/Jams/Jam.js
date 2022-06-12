@@ -40,15 +40,17 @@ function Thumbnail({ image, loading }) {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        if (image === undefined) return;
+        if (image === undefined && loading === false) return;
         setError(
-            isValidHttpUrl(image) === false ? (
+            loading ? (
+                false
+            ) : isValidHttpUrl(image) === false ? (
                 <>Malformed image URL</>
             ) : imageDomains.includes(hostname) ? (
                 false
             ) : (
                 <>
-                    Images are only accepted from <i>assets.scratch.mit.edu</i>! This image is hosted under the domain <i>{hostname}</i>
+                    Images are only accepted from <i>assets.scratch.mit.edu</i> and <i>cdn2.scratch.mit.edu</i>! This image is hosted under the domain <i>{hostname}</i>
                 </>
             ),
         );
@@ -56,6 +58,7 @@ function Thumbnail({ image, loading }) {
 
     return (
         <>
+            {error ? 'true' : 'false'}
             {(loadingThumbnail === true || loading === true) && error === false && <Skeleton width="100%" aspectRatio="16 / 9" borderRadius={`${theme.radii[4]} ${theme.radii[4]} 0 0`} />}
             {imageDomains.includes(hostname) && error === false ? (
                 <Box css={{ display: loadingThumbnail === true ? 'none' : 'auto' }}>

@@ -13,4 +13,4 @@ export const databaseCollections = {
 
 export const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
-export const imageDomains = ['images.unsplash.com', 'assets.scratch.mit.edu'];
+export const imageDomains = ['assets.scratch.mit.edu', 'cdn2.scratch.mit.edu'];
