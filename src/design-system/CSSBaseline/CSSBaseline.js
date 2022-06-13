@@ -7,9 +7,6 @@ const globalStyles = globalCss({
         textRendering: 'geometricPrecision',
         WebkitTapHighlightColor: 'transparent',
     },
-    'html, body, #root, #__next': {
-        height: '100%',
-    },
     '#__next': {
         position: 'relative',
         zIndex: 0,
