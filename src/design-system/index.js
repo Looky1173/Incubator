@@ -12,6 +12,9 @@ export { default as Button } from './Button';
 
 export { default as Card } from './Card';
 
+export { default as Checkbox } from './Checkbox';
+export * from './Checkbox';
+
 export { default as Container } from './Container';
 
 export { default as CSSBaseline } from './CSSBaseline';
@@ -35,6 +38,9 @@ export { default as Popover } from './Popover';
 export * from './Popover';
 
 export { default as Section } from './Section';
+
+export { default as Select } from './Select';
+export * from './Select';
 
 export { default as Separator } from './Separator';
 

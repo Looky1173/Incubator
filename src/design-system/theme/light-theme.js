@@ -57,6 +57,8 @@ export default {
         card3: '$slate3',
         card4: '$slate4',
 
+        card2opaque: 'hsla(210, 16.7%, 97.6%, 0.7)', // $slate2 with 0.7 opacity
+
         hiContrast: '$slate12',
         loContrast: 'white',
     },

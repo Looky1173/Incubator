@@ -1,13 +1,29 @@
 import NextLink from 'next/link';
-import { Badge, Box, Container, Flex, Link, Text, Heading, Popover, PopoverTrigger, PopoverContent, PopoverClose, Separator, Skeleton } from '@design-system';
+import { Badge, Box, Container, Flex, Link, Text, Heading, Popover, PopoverTrigger, PopoverContent, Separator, Skeleton } from '@design-system';
 import ThemeToggle from '../ThemeToggle';
 import Logo from '../Logo';
 import { useUser } from '@hooks';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import fetchJson from '@utils/fetch-json';
+import { useState, useEffect } from 'react';
 
 function Header({ withSecondaryHeader, secondaryHeader }) {
     const { user, mutateUser } = useUser();
+    // Scroll detection based on https://stackoverflow.com/a/68088561/14226941
+    const [scrollY, setScrollY] = useState(0);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrollY(window.scrollY);
+        };
+
+        handleScroll();
+
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
 
     return (
         <>
@@ -128,12 +144,14 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                 </Flex>
             </Flex>
             {withSecondaryHeader === true && (
-                <Container size="3">
+                <Container size="3" css={{ position: 'sticky', top: '1rem', zIndex: 10 }}>
                     <Flex
                         css={{
                             px: '$4',
                             py: '$2',
-                            backgroundColor: '$card2',
+                            backgroundColor: scrollY < 150 ? '$card2' : '$card2opaque',
+                            boxShadow: scrollY > 150 && '$lg',
+                            backdropFilter: 'blur(5px)',
                             borderRadius: '$4',
                             border: '2px solid $colors$neutral6',
                         }}

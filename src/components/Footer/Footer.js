@@ -43,6 +43,13 @@ const Footer = () => {
                                 </Text>
                             </li>
                             <li>
+                                <Text as="p" size={4} css={{ mt: '$3', lineHeight: '1' }}>
+                                    <NextLink href="/scratch-jams" passHref>
+                                        <Link variant="subtle">Scratch game jams</Link>
+                                    </NextLink>
+                                </Text>
+                            </li>
+                            <li>
                                 <Text as="p" size={4} css={{ mt: '$3', color: '$neutral8', lineHeight: '1', userSelect: 'none' }}>
                                     About
                                 </Text>

@@ -1,6 +1,8 @@
-import { Box, Card, Flex, Heading, Text, Skeleton, theme, styled } from '@design-system';
+import { Box, Card, Flex, Heading, Badge, Text, Skeleton, theme, styled } from '@design-system';
 import { imageDomains } from '@constants';
 import { useState, useEffect } from 'react';
+import getJamStatus from '@utils/get-jam-status';
+import NextLink from 'next/link';
 
 function ErrorFallback({ error = undefined }) {
     return (
@@ -72,28 +74,45 @@ function Thumbnail({ image, loading }) {
 }
 
 function Jam({ loading = false, data }) {
+    const [jamStatus, setJamStatus] = useState(null);
+
+    useEffect(() => {
+        if (loading) return;
+        setJamStatus(getJamStatus(data?.dates?.start, data?.dates?.end));
+    }, [loading, data]);
     return (
-        <Card as="a" href={loading === true ? '#' : 'https://itinerary.eu.org/jams/' + data.slug} variant="interactive">
-            <Thumbnail image={data?.content?.headerImage} loading={loading} />
-            <Box css={{ p: '$3' }}>
-                <Heading css={{ mb: '$2' }}>{loading === true ? <Skeleton width="60%" /> : data.name}</Heading>
-                <Text size="3" css={{ color: '$neutral11' }}>
-                    {loading === true ? <Skeleton /> : data.content.description}
-                </Text>
-                <Flex align={{ '@initial': 'start', '@bp2': 'center' }} direction={{ '@initial': 'column', '@bp2': 'row' }} gap={{ '@initial': 1, '@bp2': 0 }} justify="between" css={{ mt: '$3' }}>
-                    <Flex align="center">
-                        <Text size="2" css={{ color: '$neutral11' }}>
-                            Hosted by {<Skeleton inline width="5rem" />}
-                        </Text>
+        <NextLink href={loading === false ? `/scratch-jams/${data._id}` : '#'} passHref>
+            <Card as={loading === false && 'a'} variant="interactive" css={{ backgroundColor: data?.featured && '$accent2' }}>
+                <Thumbnail image={data?.content?.headerImage} loading={loading} />
+                <Box css={{ p: '$3', color: data?.featured ? '$accent11' : '$neutral11' }}>
+                    <Heading css={{ mb: '$2', color: data?.featured && '$accent12' }}>{loading === true ? <Skeleton width="60%" /> : data.name}</Heading>
+                    <Text size="3" css={{ color: 'inherit' }}>
+                        {loading === true ? <Skeleton /> : data.content.description}
+                    </Text>
+                    {loading === true ? (
+                        <Box css={{ mt: '$3' }}>
+                            <Skeleton width="4rem" />
+                        </Box>
+                    ) : (
+                        <Badge variant={jamStatus === 0 ? 'accent' : 'neutral'} css={{ mt: '$3' }}>
+                            {jamStatus === -1 ? 'Upcoming' : jamStatus === 0 ? 'Ongoing' : 'Ended'}
+                        </Badge>
+                    )}
+                    <Flex align={{ '@initial': 'start', '@bp2': 'center' }} direction={{ '@initial': 'column', '@bp2': 'row' }} gap={{ '@initial': 1, '@bp2': 0 }} justify="between" css={{ mt: '$3' }}>
+                        <Flex align="center">
+                            <Text size="2" css={{ color: 'inherit' }}>
+                                Hosted by {<Skeleton inline width="5rem" />}
+                            </Text>
+                        </Flex>
+                        <Box>
+                            <Text size="2" css={{ color: 'inherit' }}>
+                                {<Skeleton inline width="1.5rem" />} submissions
+                            </Text>
+                        </Box>
                     </Flex>
-                    <Box>
-                        <Text size="2" css={{ color: '$neutral11' }}>
-                            {<Skeleton inline width="1.5rem" />} submissions
-                        </Text>
-                    </Box>
-                </Flex>
-            </Box>
-        </Card>
+                </Box>
+            </Card>
+        </NextLink>
     );
 }
 
