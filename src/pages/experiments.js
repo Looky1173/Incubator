@@ -21,7 +21,7 @@ export default function Experiments({ experiments }) {
 
             <Container size="2" css={{ my: '$8' }}>
                 {experiments.map((experiment) => (
-                    <Box key={experiment.title} css={{ color: experiment.disabled ? '$neutral8' : 'inherit', userSelect: experiment.disabled ? 'none' : 'auto' }}>
+                    <Box key={experiment.title} css={{ color: experiment.disabled ? '$neutral8' : '$hiContrast', userSelect: experiment.disabled ? 'none' : 'auto' }}>
                         <Box css={{ mb: '$7' }}>
                             {experiment.disabled ? (
                                 <Text as="h3" size="6" css={{ display: 'inline', fontWeight: 500, lineHeight: '30px', color: 'inherit' }}>
