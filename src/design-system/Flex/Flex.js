@@ -1,4 +1,4 @@
-import { styled } from "../theme";
+import { styled } from '../theme';
 
 const Flex = styled('div', {
     boxSizing: 'border-box',

@@ -1,9 +1,6 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '@constants';
-import {
-    getScratchGameJamSubmissions,
-    saveScratchGameJamSubmission,
-} from '@database/scratch-jams';
+import { getScratchGameJamSubmissions, saveScratchGameJamSubmission } from '@database/scratch-jams';
 
 import clientPromise from '@database';
 import { getUserData } from '@database/users';
@@ -14,11 +11,11 @@ export default withIronSessionApiRoute(async (req, res) => {
     const client = await clientPromise;
     const Database = client.db();
 
-    switch(req.method) {
+    switch (req.method) {
         case 'GET': {
             const submissions = await getScratchGameJamSubmissions(Database, jam, { limit: req.query.limit, offset: req.query.offset, sort: req.query.sort });
             return res.status(200).json(submissions);
-        };
+        }
         case 'POST': {
             let body = req.body;
             if (isObjectEmpty(body)) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing body with project ID' } });

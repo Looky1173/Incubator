@@ -1,9 +1,6 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '@constants';
-import {
-    isScratchJamOrganizer,
-    makeScratchJamOrganizer,
-} from '@database/scratch-jams';
+import { isScratchJamOrganizer, makeScratchJamOrganizer } from '@database/scratch-jams';
 import { getUserData } from '@database/users';
 import { isObjectEmpty, isObject } from '@utils/object';
 

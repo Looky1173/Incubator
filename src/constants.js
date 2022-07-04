@@ -33,4 +33,4 @@ export const fetcher = async (...args) => {
 
 export const imageDomains = ['assets.scratch.mit.edu', 'cdn2.scratch.mit.edu', 'u.cubeupload.com', 'uploads.scratch.mit.edu'];
 
-export const MAXIMUM_UPVOTES_PER_JAM = 3
+export const MAXIMUM_UPVOTES_PER_JAM = 3;

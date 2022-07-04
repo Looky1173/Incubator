@@ -13,11 +13,12 @@ const serialize = (obj) => {
 };
 
 export default function useJams(jam = null, filters = { limit: 20, offset: 0 }, shouldFetch = true, fallbackData = null) {
-    const { data = { jams: [] }, error, isValidating, mutate } = useSWR(
-        shouldFetch ? `/api/scratch-jams${jam === null ? filters !== {} && '?' + serialize(filters) : '/' + jam}` : null,
-        fetcher,
-        fallbackData && { fallbackData: fallbackData },
-    );
+    const {
+        data = { jams: [] },
+        error,
+        isValidating,
+        mutate,
+    } = useSWR(shouldFetch ? `/api/scratch-jams${jam === null ? filters !== {} && '?' + serialize(filters) : '/' + jam}` : null, fetcher, fallbackData && { fallbackData: fallbackData });
     /* const { data, error, isValidating, mutate } = useSWR(
         shouldFetch ? ['/api/scratch-jams']`/api/scratch-jams${jam === null ? filters !== {} && '?' + serialize(filters) : '/' + jam}` : null,
         fetcher,
@@ -28,7 +29,7 @@ export default function useJams(jam = null, filters = { limit: 20, offset: 0 }, 
         data: {
             jams: [],
             total: 0,
-            ...data
+            ...data,
         },
         mutate,
         isLoading: !error && !data,

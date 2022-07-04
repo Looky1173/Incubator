@@ -23,7 +23,7 @@ function Hero() {
                     css={{
                         mb: '$3',
                         '@initial': {
-                            pr: 100
+                            pr: 100,
                         },
                         '@bp2': {
                             ta: 'center',
@@ -67,7 +67,9 @@ function Hero() {
                         </Button>
                     </NextLink>
                     <NextLink href="/about" passHref>
-                        <Button as="a" variant="neutral">Learn more</Button>
+                        <Button as="a" variant="neutral">
+                            Learn more
+                        </Button>
                     </NextLink>
                 </Flex>
             </Container>

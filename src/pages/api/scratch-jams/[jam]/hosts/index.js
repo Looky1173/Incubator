@@ -1,9 +1,6 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '@constants';
-import {
-    getScratchGameJamHosts,
-    isScratchJamOrganizer,
-} from '@database/scratch-jams';
+import { getScratchGameJamHosts, isScratchJamOrganizer } from '@database/scratch-jams';
 
 import { getUserData } from '@database/users';
 import clientPromise from '@database';
@@ -15,12 +12,12 @@ export default withIronSessionApiRoute(async (req, res) => {
 
     const isOrganizer = await isScratchJamOrganizer(Database, jam, req.session?.user?.name);
     const isAdmin = (await getUserData(Database, req.session?.user?.name))?.admin;
-    
-    switch(req.method) {
+
+    switch (req.method) {
         case 'GET': {
             const hosts = (await getScratchGameJamHosts(Database, jam)) || [];
             return res.status(200).json({ hosts: hosts, isOrganizer: isOrganizer });
-        };
+        }
         case 'POST': {
             let body = req.body;
             if (isObjectEmpty(body)) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing body with host username' } });
@@ -34,7 +31,7 @@ export default withIronSessionApiRoute(async (req, res) => {
                 return res.status(400).json({ error: error });
             }
             return res.status(200).json({ success: true });
-        };
+        }
         case 'DELETE': {
             let body = req.body;
             if (isObjectEmpty(body)) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing body with host username' } });

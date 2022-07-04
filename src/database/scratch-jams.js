@@ -161,7 +161,10 @@ export function getScratchGameJamSubmissions(db, jamId, options = { limit: 6, of
             };
 
             let submissionsCursor = sortByUpvotes
-                ? await db.collection(databaseCollections['scratch-jam-submissions']).find({ jam: ObjectId(jamId) }).sort(getSortQuery('oldest'))
+                ? await db
+                      .collection(databaseCollections['scratch-jam-submissions'])
+                      .find({ jam: ObjectId(jamId) })
+                      .sort(getSortQuery('oldest'))
                 : await db
                       .collection(databaseCollections['scratch-jam-submissions'])
                       .find({ jam: ObjectId(jamId) })
@@ -595,7 +598,7 @@ export function removeScratchGameJamSubmissionUpvote(db, jamId, project, usernam
             if (!jam) return reject({ identifier: 'notFound', message: 'The requested game jam could not be found' });
 
             await db.collection(databaseCollections['scratch-jam-upvotes']).deleteOne({ jam: ObjectId(jamId), project: Number(project), 'meta.upvotedBy': username });
-            console.log(project, username)
+            console.log(project, username);
             resolve();
         } catch (error) {
             reject(error);

@@ -32,7 +32,11 @@ export function ToastContainer() {
                             <>
                                 <ToastTitle>{toast.options.title}</ToastTitle>
                                 {toast.options.description && <ToastDescription asChild={toast.options.asChild.description}>{toast.options.description}</ToastDescription>}
-                                {toast.options.action && <ToastAction asChild={toast.options.asChild.action} altText={toast.options.actionAltText || 'Take action on this toast'}>{toast.options.action}</ToastAction>}
+                                {toast.options.action && (
+                                    <ToastAction asChild={toast.options.asChild.action} altText={toast.options.actionAltText || 'Take action on this toast'}>
+                                        {toast.options.action}
+                                    </ToastAction>
+                                )}
                             </>
                         )}
                     </Toast>

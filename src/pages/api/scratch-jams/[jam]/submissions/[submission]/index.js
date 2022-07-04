@@ -1,10 +1,6 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '@constants';
-import {
-    getScratchGameJamSubmission,
-    getScratchGameJamStatistics,
-    removeScratchGameJamSubmission,
-} from '@database/scratch-jams';
+import { getScratchGameJamSubmission, getScratchGameJamStatistics, removeScratchGameJamSubmission } from '@database/scratch-jams';
 
 import clientPromise from '@database';
 
@@ -13,11 +9,11 @@ export default withIronSessionApiRoute(async (req, res) => {
     const client = await clientPromise;
     const Database = client.db();
 
-    switch(req.method) {
+    switch (req.method) {
         case 'GET': {
             const submission = await getScratchGameJamSubmission(Database, jam, submissionId);
             return submission ? res.status(200).json(submission) : res.status(404).json({ error: { identifier: 'notFound', message: 'The requested submission could not be found' } });
-        };
+        }
         case 'DELETE': {
             const statistics = await getScratchGameJamStatistics(Database, jam, req.session.user.name);
             const removingOwnSubmissions = statistics.participation.project === submissionId;
@@ -31,7 +27,7 @@ export default withIronSessionApiRoute(async (req, res) => {
             } catch (error) {
                 return res.status(400).json({ error });
             }
-        };
+        }
         default: {
             return res.status(405).json({ error: 'Method not allowed' });
         }

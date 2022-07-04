@@ -79,7 +79,7 @@ const Badge = styled('span', {
                 '&:focus': {
                     boxShadow: 'inset 0 0 0 1px $colors$success8, 0 0 0 1px $colors$success8',
                 },
-            }
+            },
         },
         interactive: {
             true: {},

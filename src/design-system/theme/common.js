@@ -221,7 +221,7 @@ export const defaultColors = {
     ...whiteA,
     ...blackA,
 
-    selection: '$accent5'
+    selection: '$accent5',
 };
 
 export const defaultMedia = {

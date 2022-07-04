@@ -7,7 +7,7 @@ export default async (req, res) => {
         try {
             userData = await fetch(`https://api.scratch.mit.edu/users/${slug}/`);
             userData = await userData.json();
-        } catch(ex) {
+        } catch (ex) {
             return res.status(500).json({ error: { identifier: 'unknownError', message: 'The server was not able to handle this request', details: ex } });
         }
         if (userData === null) return;
@@ -16,4 +16,4 @@ export default async (req, res) => {
     }
 
     res.status(405).json({ error: 'Method not allowed' });
-}
+};

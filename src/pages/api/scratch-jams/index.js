@@ -27,7 +27,7 @@ export default withIronSessionApiRoute(async (req, res) => {
             const insertedId = await createScratchJam(Database, { ...body }, req.session.user.name);
             return res.status(200).json({ success: true, insertedId: insertedId });
         } catch (error) {
-            console.log(error)
+            console.log(error);
             return res.status(400).json({ error: error });
         }
     }
