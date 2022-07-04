@@ -32,7 +32,7 @@ const getJamsHostedByUsername = (db, username) => {
             const aggregationResultCursor = await db.collection(databaseCollections['scratch-jam-hosts']).aggregate(pipeline);
             const aggregationResult = await aggregationResultCursor.toArray();
 
-            resolve(aggregationResult[0].array || []);
+            resolve(aggregationResult?.[0]?.array || []);
         } catch (error) {
             reject(Error(error));
         }
