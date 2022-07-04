@@ -5,11 +5,14 @@ export const renameProp = (oldProp, newProp, { [oldProp]: old, ...others }) => (
     ...others,
 });
 
-// copy an object without reference
+
+/**
+ * Clone an object
+ * @param {Object} obj 
+ * @returns {Object} The cloned object.
+ */
 export const copyObject = (obj) => {
-    if (!isObject(obj)) return obj;
-    if (obj instanceof Array) return [...obj];
-    return { ...obj };
+    return JSON.parse(JSON.stringify(obj));
 };
 
 // copy an object omit some keys

@@ -7,6 +7,7 @@ export const sessionOptions = {
     },
 };
 
+
 export const databaseCollections = {
     users: 'users',
     'scratch-jams': 'jams',
@@ -15,6 +16,13 @@ export const databaseCollections = {
     'scratch-jam-upvotes': 'upvotes',
 };
 
+/**
+ * Request data from an URI.
+ * @param {string} uri
+ * @param {Request} opts
+ * @returns {Object}
+ * @throws {FetchError}
+ */
 export const fetcher = async (...args) => {
     const res = await fetch(...args);
 
@@ -31,6 +39,8 @@ export const fetcher = async (...args) => {
     return res.json();
 };
 
+/** @type {string[]} */
 export const imageDomains = ['assets.scratch.mit.edu', 'cdn2.scratch.mit.edu', 'u.cubeupload.com', 'uploads.scratch.mit.edu'];
 
+/** @type {number} */
 export const MAXIMUM_UPVOTES_PER_JAM = 3;
