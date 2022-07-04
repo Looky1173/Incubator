@@ -32,7 +32,7 @@ const getJamsHostedByUsername = (db, username) => {
             const aggregationResultCursor = await db.collection(databaseCollections['scratch-jam-hosts']).aggregate(pipeline);
             const aggregationResult = await aggregationResultCursor.toArray();
 
-            resolve(aggregationResult[0].array || []);
+            resolve(aggregationResult[0]?.array || []);
         } catch (error) {
             reject(Error(error));
         }
@@ -99,7 +99,6 @@ export function getScratchGameJams(db, limit = 40, offset = 0, filters = {}, use
                         delete jams[index].content.body;
                 });
             }
-
             resolve({ total: jamsCount, jams: jams });
         } catch (error) {
             reject(Error(error));

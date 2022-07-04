@@ -4,9 +4,7 @@ import { getUserData } from '@database/users';
 
 import clientPromise from '@database';
 
-export default withIronSessionApiRoute(userRoute, sessionOptions);
-
-async function userRoute(req, res) {
+export default withIronSessionApiRoute(async (req, res) => {
     const client = await clientPromise;
     const Database = client.db();
 
@@ -33,4 +31,6 @@ async function userRoute(req, res) {
     }
 
     res.status(405).json({ error: 'Method not allowed' });
-}
+}, sessionOptions);
+
+

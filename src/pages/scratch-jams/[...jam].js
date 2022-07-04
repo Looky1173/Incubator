@@ -621,7 +621,7 @@ function NewSubmission({ onBackToSubmissions, jamId, mutate }) {
                 </Button>
                 <Button
                     as={isProjectIdValid && 'a'}
-                    href={isProjectIdValid && `https://scratch.mit.edu/projects/${projectId}`}
+                    href={(isProjectIdValid && `https://scratch.mit.edu/projects/${projectId}`) || ''}
                     target={isProjectIdValid && '_blank'}
                     variant="accent"
                     size="small"
