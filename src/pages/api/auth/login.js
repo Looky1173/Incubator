@@ -17,7 +17,7 @@ export default withIronSessionApiRoute(async (req, res) => {
         res.redirect(`https://auth.itinerary.eu.org/auth/?redirect=${redirect}&name=Incubator`);
     } else {
         // The user is already logged in, or have sent a session cookie
-        let userData = await getUserData(Database, req.session.user.username);
+        let userData = await getUserData(Database, req.session.user.name);
         if (!userData) {
             req.session.destroy();
             return res.redirect(`https://fluffyscratch.hampton.pw/auth/getKeys/v2?redirect=${redirect}`);

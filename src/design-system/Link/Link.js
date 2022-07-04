@@ -1,5 +1,5 @@
-import { styled } from "../theme";
-import Text from '../Text'
+import { styled } from '../theme';
+import Text from '../Text';
 
 const Link = styled('a', {
     alignItems: 'center',
@@ -8,7 +8,7 @@ const Link = styled('a', {
     outline: 'none',
     textDecorationLine: 'none',
     textUnderlineOffset: '3px',
-    textDecorationColor: '$slate4',
+    textDecorationColor: '$neutral4',
     WebkitTapHighlightColor: 'rgba(0,0,0,0)',
     lineHeight: 'inherit',
     '@hover': {
@@ -52,6 +52,38 @@ const Link = styled('a', {
                 },
                 '&:focus': {
                     outlineColor: '$slate8',
+                },
+            },
+            neutral: {
+                color: '$neutral11',
+                textDecorationColor: '$neutral8',
+                textDecorationLine: 'underline',
+                '&:focus': {
+                    outlineColor: '$neutral8',
+                },
+            },
+            accent: {
+                color: '$accent11',
+                textDecorationColor: '$accent8',
+                textDecorationLine: 'underline',
+                '&:focus': {
+                    outlineColor: '$accent8',
+                },
+            },
+            danger: {
+                color: '$danger11',
+                textDecorationColor: '$danger8',
+                textDecorationLine: 'underline',
+                '&:focus': {
+                    outlineColor: '$danger8',
+                },
+            },
+            success: {
+                color: '$success11',
+                textDecorationColor: '$success8',
+                textDecorationLine: 'underline',
+                '&:focus': {
+                    outlineColor: '$success8',
                 },
             },
         },

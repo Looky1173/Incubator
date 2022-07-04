@@ -77,7 +77,15 @@ const StyledToast = styled(ToastPrimitive.Root, {
                     boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px, 0 0 0 2px $colors$accent7',
                 },
             },
+            success: {
+                color: '$success11',
+                backgroundColor: '$success2',
+                '&:hover, &:focus, &:focus-visible': {
+                    boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px, 0 0 0 2px $colors$success7',
+                },
+            },
             danger: {
+                color: '$danger11',
                 backgroundColor: '$danger2',
                 '&:hover, &:focus, &:focus-visible': {
                     boxShadow: 'hsl(206 22% 7% / 35%) 0px 10px 38px -10px, hsl(206 22% 7% / 20%) 0px 10px 20px -15px, 0 0 0 2px $colors$danger7',

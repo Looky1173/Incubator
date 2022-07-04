@@ -20,3 +20,7 @@ export const omitObject = (obj, omitKeys) => {
     omitKeys.forEach((key) => newObj[key] && delete newObj[key]);
     return newObj;
 };
+
+export const isObjectEmpty = (obj) => {
+    return obj ? Object.keys(obj).length === 0 && Object.getPrototypeOf(obj) === Object.prototype : true;
+};

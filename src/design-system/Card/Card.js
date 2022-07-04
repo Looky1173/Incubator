@@ -2,7 +2,6 @@ import { styled } from '../theme/stitches.config';
 
 const Card = styled('div', {
     appearance: 'none',
-    border: 'none',
     boxSizing: 'border-box',
     font: 'inherit',
     lineHeight: '1',
@@ -19,34 +18,18 @@ const Card = styled('div', {
     flexShrink: 0,
     borderRadius: '$4',
     position: 'relative',
-
-    '&::before': {
-        boxSizing: 'border-box',
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0,
-        boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.1)',
-        borderRadius: '$4',
-        pointerEvents: 'none',
-    },
+    border: '2px solid $colors$neutral6',
 
     variants: {
         variant: {
             interactive: {
                 '@hover': {
                     '&:hover': {
-                        '&::before': {
-                            boxShadow: 'inset 0 0 0 1px rgba(0,0,0,.2)',
-                        },
+                        border: '2px solid $colors$neutral7',
                     },
                 },
                 '&:focus': {
-                    '&::before': {
-                        boxShadow: '0 0 0 2px $colors$accent8',
-                    },
+                    border: '2px solid $colors$neutral8',
                 },
             },
             ghost: {
@@ -89,6 +72,11 @@ const Card = styled('div', {
                 '&:focus': {
                     boxShadow: 'inset 0 0 0 1px $colors$accent8, 0 0 0 1px $colors$accent8',
                 },
+            },
+            danger: {
+                backgroundColor: '$danger2',
+                color: '$danger11',
+                borderColor: '$danger6',
             },
         },
     },

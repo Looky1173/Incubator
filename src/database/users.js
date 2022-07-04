@@ -3,7 +3,7 @@ import { databaseCollections } from '@constants';
 export function getUserData(db, username) {
     return new Promise(async (resolve, reject) => {
         try {
-            let user = await db.collection(databaseCollections.users).findOne({
+            const user = await db.collection(databaseCollections.users).findOne({
                 name: username,
             });
             resolve(user);

@@ -13,7 +13,7 @@ export default function Dashboard() {
 
     function deleteMyAccount() {
         if (confirm('Are you sure you want to delete your account? This action cannot be undone!')) {
-            fetch('/api/user/' + user.username, { method: 'DELETE' })
+            fetch('/api/user/' + user.name, { method: 'DELETE' })
                 .then((response) => response.json())
                 .then((data) => {
                     router.push('/');
@@ -31,7 +31,7 @@ export default function Dashboard() {
                     Dashboard
                 </Text>
                 <Text as="h2" size={{ '@initial': '4', '@bp2': '6' }} css={{ color: '$slate11', mb: '$4' }}>
-                    Welcome back, {user?.username}!
+                    Welcome back, {user?.name}!
                 </Text>
             </Container>
 

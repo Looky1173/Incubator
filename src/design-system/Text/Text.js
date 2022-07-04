@@ -101,6 +101,15 @@ const Text = styled('span', {
             contrast: {
                 color: '$hiContrast',
             },
+            subtle: {
+                color: '$neutral11',
+            },
+            inherit: {
+                color: 'inherit',
+            },
+        },
+        align: {
+            center: { textAlign: 'center' },
         },
         gradient: {
             true: {

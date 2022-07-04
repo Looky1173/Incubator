@@ -43,7 +43,7 @@ export default withIronSessionApiRoute(async (req, res) => {
                 },
             });
 
-            req.session.user = { username: scratchData.username };
+            req.session.user = { name: scratchData.username };
             await req.session.save();
             res.redirect(websiteURL);
         }
@@ -51,7 +51,7 @@ export default withIronSessionApiRoute(async (req, res) => {
         if (user.banned) res.redirect(`${websiteURL}/?auth-error=2`);
 
         // The user is now logged in
-        req.session.user = { username: scratchData.username };
+        req.session.user = user;
         await req.session.save();
         res.redirect(websiteURL);
     } else {

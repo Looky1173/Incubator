@@ -59,6 +59,8 @@ function styleOptionsToCssObject({
     borderRadius,
     circle,
 
+    display,
+
     direction,
     duration,
     enableAnimation = defaultEnableAnimation,
@@ -72,10 +74,10 @@ function styleOptionsToCssObject({
     if (typeof width === 'string' || typeof width === 'number') style.width = width;
     if (typeof height === 'string' || typeof height === 'number') style.height = height;
     if (typeof aspectRatio === 'string' || typeof aspectRatio === 'number') style.aspectRatio = aspectRatio;
-
     if (typeof borderRadius === 'string' || typeof borderRadius === 'number') style.borderRadius = borderRadius;
-
     if (circle) style.borderRadius = '50%';
+
+    if (typeof display === 'string') style.display = display;
 
     if (typeof baseColor !== 'undefined') style['--base-color'] = baseColor;
     if (typeof highlightColor !== 'undefined') style['--highlight-color'] = highlightColor;

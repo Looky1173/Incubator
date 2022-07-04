@@ -15,6 +15,11 @@ const Button = styled('button', {
     userSelect: 'none',
     fontSize: '$4',
     transition: 'background-color 300ms ease',
+    width: 'fit-content',
+
+    '&:focus': {
+        zIndex: 2,
+    },
 
     '&:disabled': {
         pointerEvents: 'none',
@@ -62,6 +67,20 @@ const Button = styled('button', {
                 },
             },
 
+            success: {
+                backgroundColor: '$success4',
+                color: '$success11',
+                '&:hover': {
+                    backgroundColor: '$success5',
+                },
+                '&:active': {
+                    backgroundColor: '$success6',
+                },
+                '&:focus': {
+                    boxShadow: '0 0 0 1px $colors$success8, inset 0 0 0 1px $colors$success8',
+                },
+            },
+
             danger: {
                 backgroundColor: '$danger4',
                 color: '$danger11',
@@ -83,9 +102,24 @@ const Button = styled('button', {
                 px: '$2',
             },
             base: {
-                borderRadius: '9999px',
+                borderRadius: '$pill',
                 height: '$7',
                 px: '$4',
+            },
+            modular: {
+                borderRadius: '$4',
+                height: '$7',
+                px: '$4',
+            },
+        },
+
+        block: {
+            true: {
+                width: '100%',
+                justifyContent: 'center',
+            },
+            false: {
+                width: 'fit-content',
             },
         },
     },
@@ -93,6 +127,7 @@ const Button = styled('button', {
     defaultVariants: {
         variant: 'base',
         size: 'base',
+        block: false,
     },
 });
 

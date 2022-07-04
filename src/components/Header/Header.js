@@ -104,9 +104,9 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                     {user?.isLoggedIn === true && (
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Link variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' } }}>
+                                <Link href="#" variant="subtle" css={{ mr: '$5', '@bp2': { mr: '$7' } }}>
                                     <Text as="div" css={{ display: 'inline-flex' }}>
-                                        {user?.username}
+                                        {user?.name}
                                         <Box css={{ ml: '$1' }}>
                                             <ChevronDownIcon width={18} height={18} />
                                         </Box>
@@ -155,16 +155,28 @@ function Header({ withSecondaryHeader, secondaryHeader }) {
                             borderRadius: '$4',
                             border: '2px solid $colors$neutral6',
                         }}
+                        align={{ '@initial': 'center', '@bp2': 'stretch' }}
+                        justify="between"
+                        direction={{ '@initial': 'column', '@bp2': 'row' }}
                     >
-                        <Heading as="h2">{secondaryHeader?.title}</Heading>
-                        {secondaryHeader.subtitle && (
-                            <>
-                                <Separator orientation="vertical" css={{ mx: '$2', '&[data-orientation=vertical]': { width: '2px', height: 'initial' } }} />
-                                <Heading as="h3" css={{ fontWeight: 400 }}>
-                                    {secondaryHeader?.subtitle}
-                                </Heading>
-                            </>
-                        )}
+                        <Flex
+                            css={{
+                                mb: secondaryHeader.controls ? '$2' : null,
+                                '@bp2': {
+                                    mb: secondaryHeader.controls ? 0 : null,
+                                },
+                            }}
+                        >
+                            <Heading as="h2">{secondaryHeader?.title}</Heading>
+                            {secondaryHeader.subtitle && (
+                                <>
+                                    <Separator orientation="vertical" css={{ mx: '$2', '&[data-orientation=vertical]': { width: '2px', height: 'initial' } }} />
+                                    <Heading as="h3" css={{ fontWeight: 400 }}>
+                                        {secondaryHeader?.subtitle}
+                                    </Heading>
+                                </>
+                            )}
+                        </Flex>
                         {secondaryHeader.controls && secondaryHeader.controls}
                     </Flex>
                 </Container>

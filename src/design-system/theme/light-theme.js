@@ -52,12 +52,28 @@ export default {
         danger11: '$tomato11',
         danger12: '$tomato12',
 
+        success1: '$grass1',
+        success2: '$grass2',
+        success3: '$grass3',
+        success4: '$grass4',
+        success5: '$grass5',
+        success6: '$grass6',
+        success7: '$grass7',
+        success8: '$grass8',
+        success9: '$grass9',
+        success10: '$grass10',
+        success11: '$grass11',
+        success12: '$grass12',
+
         card1: '$slate1',
         card2: '$slate2',
         card3: '$slate3',
         card4: '$slate4',
 
         card2opaque: 'hsla(210, 16.7%, 97.6%, 0.7)', // $slate2 with 0.7 opacity
+
+        accentOpaque: 'hsla(190, 95%, 39%, 0.1)', // $accent9 with 0.1 opacity
+        neutralOpaque: 'hsl(206, 6%, 56%, 0.3)', // $slate9 with 0.3 opacity
 
         hiContrast: '$slate12',
         loContrast: 'white',

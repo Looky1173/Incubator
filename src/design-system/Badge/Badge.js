@@ -66,6 +66,20 @@ const Badge = styled('span', {
                     boxShadow: 'inset 0 0 0 1px $colors$accent8, 0 0 0 1px $colors$accent8',
                 },
             },
+            danger: {
+                backgroundColor: '$danger4',
+                color: '$danger11',
+                '&:focus': {
+                    boxShadow: 'inset 0 0 0 1px $colors$danger8, 0 0 0 1px $colors$danger8',
+                },
+            },
+            success: {
+                backgroundColor: '$success4',
+                color: '$success11',
+                '&:focus': {
+                    boxShadow: 'inset 0 0 0 1px $colors$success8, 0 0 0 1px $colors$success8',
+                },
+            }
         },
         interactive: {
             true: {},

@@ -16,12 +16,12 @@ import {
     Link,
     styled,
 } from '@design-system';
-import NextLink from 'next/link';
 import { Layout, Jam, Select, SelectItem } from '@components';
 import { MixerHorizontalIcon, DotsHorizontalIcon, Cross2Icon, CheckIcon, DividerHorizontalIcon } from '@radix-ui/react-icons';
 import { useJams, usePagination, useUser } from '@hooks';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import NextLink from 'next/link';
 
 const Label = styled('label', {
     color: '$hiContrast',
@@ -56,7 +56,12 @@ export default function ScratchGameJams() {
         dataLength: jamsLength,
         isInitialized,
     });
-    const { data, isLoading, isError } = useJams(
+    const {
+        data,
+        isLoading,
+        isError,
+        mutate: mutateJams,
+    } = useJams(
         null,
         { limit: limit, offset: offset * limit, featured: filters.featured === 'indeterminate' ? undefined : filters.featured, status: filters.status === null ? undefined : filters.status },
         isInitialized,
@@ -64,16 +69,21 @@ export default function ScratchGameJams() {
 
     useEffect(() => {
         if (router.isReady === true) {
-            setLimit(router.query.limit || 6);
+            setLimit(router.query.limit || 10);
             jumpToPage(Number(router.query.page || 1));
             setIsInitialized(true);
         }
     }, [router.isReady]);
 
     useEffect(() => {
+        if (router.isReady === true) {
+            setLimit(router.query.limit || 10);
+        }
+    }, [router.isReady, router]);
+
+    useEffect(() => {
         if (data) {
             setJamsLength(data.total);
-            console.log(data);
         }
     }, [data]);
 
@@ -104,7 +114,7 @@ export default function ScratchGameJams() {
                 title: 'Scratch Game Jams',
                 subtitle: 'Explore',
                 controls: (
-                    <Flex align="center" justify="end" css={{ ml: 'auto' }}>
+                    <Flex align="center" justify="end">
                         {user?.isLoggedIn === true && (
                             <Popover>
                                 <PopoverTrigger asChild>
@@ -118,9 +128,9 @@ export default function ScratchGameJams() {
                                         <Cross2Icon width={20} height={20} />
                                     </PopoverClose>
                                     <Flex css={{ flexDirection: 'column', gap: 10 }}>
-                                        <Button as="a" href="https://itinerary.eu.org/jams/new" target="_blank">
-                                            Create new game jam
-                                        </Button>
+                                        <NextLink href="/scratch-jams/new" passHref>
+                                            <Button as="a">Create new game jam</Button>
+                                        </NextLink>
                                     </Flex>
                                 </PopoverContent>
                             </Popover>
@@ -139,7 +149,7 @@ export default function ScratchGameJams() {
                                 <PopoverClose>
                                     <Cross2Icon width={20} height={20} />
                                 </PopoverClose>
-                                <Flex css={{ flexDirection: 'column', gap: 10 }}>
+                                <Flex direction="column" gap="2">
                                     <Text bold>Limit</Text>
                                     <Select value={[3, 5, 10, 20].includes(Number(limit)) === false ? 'custom' : limit} onValueChange={(value) => setLimit(value)}>
                                         <SelectItem value="3">3 jams per page</SelectItem>
@@ -228,7 +238,7 @@ export default function ScratchGameJams() {
                 {isInitialized === true && (
                     <Grid gap="4" columns={{ '@initial': 1, '@bp1': 2, '@bp2': 3 }}>
                         {isLoading === false && data !== undefined
-                            ? data.jams.map((jam, index) => <Jam key={index} data={jam} loading={false} />)
+                            ? data.jams.map((jam, index) => <Jam key={index} data={jam} loading={false} mutateThumbnailCallback={mutateJams} />)
                             : [...Array(Number(limit))].map((value, index) => <Jam loading={true} key={index} />)}
                     </Grid>
                 )}
