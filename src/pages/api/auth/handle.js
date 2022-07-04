@@ -38,7 +38,7 @@ export default withIronSessionApiRoute(async (req, res) => {
             await createUser(Database, {
                 name: scratchData.username,
                 meta: {
-                    updated: now.toISOString(),
+                    updated: now,
                     updatedBy: null,
                 },
             });

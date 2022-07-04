@@ -41,7 +41,7 @@ function Submission({ jam, isOrganizer, project, remainingUpvotes, user }) {
                     </Avatar>
                     <Box css={{ p: '$3', color: '$neutral11' }}>
                         <Flex gap="2" align="center">
-                            <Avatar css={{ aspectRatio: '1 / 1', borderRadius: '$2', width: '40px' }}>
+                            <Avatar css={{ aspectRatio: '1 / 1', borderRadius: '$2', width: '40px', minWidth: '40px' }}>
                                 <AvatarImage src={`/api/user/${project.author}/picture`} alt={`${project.author}'s profile picture`} />
                                 <AvatarFallback delayMs={2000}>
                                     <AvatarIcon width={24} height={24} />

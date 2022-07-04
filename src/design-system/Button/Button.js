@@ -16,6 +16,7 @@ const Button = styled('button', {
     fontSize: '$4',
     transition: 'background-color 300ms ease',
     width: 'fit-content',
+    cursor: 'pointer',
 
     '&:focus': {
         zIndex: 2,

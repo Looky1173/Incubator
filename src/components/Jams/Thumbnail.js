@@ -251,7 +251,13 @@ export default function Thumbnail({ image, loading, location = 'explore', jam, c
             {imageDomains.includes(hostname) && error === false ? (
                 <Box css={{ display: loadingThumbnail === true ? 'none' : 'auto', position: 'relative' }}>
                     {canChangeThumbnail && <ChangeThumbnailButton onClick={onThumbnailButtonClick} />}
-                    <StyledThumbnail src={image} ref={imageRef} onLoad={() => setLoadingThumbnail(false)} css={{ borderRadius: location === 'jam' && '$4' }} />
+                    <StyledThumbnail
+                        src={image}
+                        ref={imageRef}
+                        onLoad={() => setLoadingThumbnail(false)}
+                        css={{ borderRadius: location === 'jam' && '$4' }}
+                        onError={() => setError(<>Incubator couldn't retrieve this cover image. This is not an issue with Incubator, but with the external server hosting the requested image.</>)}
+                    />
                 </Box>
             ) : (
                 <>
