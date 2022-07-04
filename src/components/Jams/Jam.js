@@ -5,6 +5,8 @@ import { useJamHosts, useUser } from '@hooks';
 import { useRouter } from 'next/router';
 import Thumbnail from './Thumbnail';
 import stopClickPropagation from '@utils/stop-click-propagation';
+import { fetcher } from '@constants';
+import useSWR from 'swr';
 
 function Jam({ loading = false, data, mutateThumbnailCallback }) {
     const { user } = useUser();
@@ -12,6 +14,8 @@ function Jam({ loading = false, data, mutateThumbnailCallback }) {
     const [hostData, setHostData] = useState(null);
     const { hosts, isOrganizer, loading: loadingHosts } = useJamHosts(data?._id);
     const router = useRouter();
+
+    const { data: jamStatistics } = useSWR(data ? `/api/scratch-jams/${data?._id}/statistics` : null, fetcher);
 
     useEffect(() => {
         if (loading) return;
@@ -25,7 +29,7 @@ function Jam({ loading = false, data, mutateThumbnailCallback }) {
         });
         hosts.length && setHostData({ organizer: hostName.name, others: hosts.length > 1 ? hosts.length - 1 : null });
     }, [hosts, loadingHosts]);
-    
+
     return (
         <Card as={loading === false && 'a'} variant="interactive" css={{ backgroundColor: data?.meta.featured && '$accent2' }} onClick={(e) => e && router.push(`/scratch-jams/${data._id}`)}>
             <Thumbnail image={data?.content?.headerImage} loading={loading} jam={data} canChangeThumbnail={isOrganizer || user?.admin} mutateThumbnailCallback={mutateThumbnailCallback} />
@@ -70,7 +74,23 @@ function Jam({ loading = false, data, mutateThumbnailCallback }) {
                     </Flex>
                     <Box>
                         <Text size="2" css={{ color: 'inherit' }}>
-                            {<Skeleton inline width="1.5rem" />} submissions
+                            {!jamStatistics ? (
+                                <>
+                                    <Skeleton inline width="1.5rem" /> submissions
+                                </>
+                            ) : (
+                                <Link
+                                    variant={data?.meta.featured ? 'accent' : 'neutral'}
+                                    href={loading === false ? `/scratch-jams/${data._id}/submissions` : '#'}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        stopClickPropagation(e);
+                                        loading === false && router.push(`/scratch-jams/${data._id}/submissions`);
+                                    }}
+                                >
+                                    {jamStatistics.submissions === 1 ? `${jamStatistics.submissions} submission` : `${jamStatistics.submissions} submissions`}
+                                </Link>
+                            )}
                         </Text>
                     </Box>
                 </Flex>
