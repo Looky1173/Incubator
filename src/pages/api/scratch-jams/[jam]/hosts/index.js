@@ -37,7 +37,7 @@ export default withIronSessionApiRoute(async (req, res) => {
             if (isObjectEmpty(body)) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing body with host username' } });
             if (!isObject(body)) body = JSON.parse(body);
             if (!body.username) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing host username' } });
-            const isHostToBeRemovedAnOrganizer = await isScratchJamOrganizer(Database, slug[0], body.username);
+            const isHostToBeRemovedAnOrganizer = await isScratchJamOrganizer(Database, jam, body.username);
             if (isHostToBeRemovedAnOrganizer === null) return res.status(400).json({ error: { identifier: 'nonexistentHost', message: 'The given host does not exist' } });
             if (isHostToBeRemovedAnOrganizer === true)
                 return res.status(400).json({ error: { identifier: 'nonexistentHost', message: 'The given host cannot be removed because they are the organizer' } });
