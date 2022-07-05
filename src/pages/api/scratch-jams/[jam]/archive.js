@@ -1,6 +1,6 @@
 import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '@constants';
-import { getScratchGameJam, isScratchJamOrganizer, archiveScratchJam } from '@database/scratch-jams';
+import { isScratchJamOrganizer, archiveScratchJam } from '@database/scratch-jams';
 import { getUserData } from '@database/users';
 import { isObjectEmpty, isObject } from '@utils/object';
 
@@ -13,8 +13,6 @@ export default withIronSessionApiRoute(async (req, res) => {
 
     const isAdmin = (await getUserData(Database, req.session?.user?.name))?.admin;
     const isOrganizer = await isScratchJamOrganizer(Database, jam, req.session?.user?.name);
-
-    const jam = await getScratchGameJam(Database, jam, req.session?.user?.name);
 
     if (req.method === 'GET') {
         let body = req.body;
