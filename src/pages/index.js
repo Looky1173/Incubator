@@ -12,7 +12,7 @@ export default function Home() {
     const [toast] = useToast();
 
     const authErrors = [
-        { title: "Couldn't log you in!", details: 'Failed Scratch Auth! Keep in mind that the login system currently does not support New Scratchers.' },
+        { title: "Couldn't log you in!", details: 'Failed Scratch Auth! Please try again and read the instructions carefully.' },
         { title: "Couldn't log you in!", details: "Our servers couldn't communicate with Scratch Auth and/or the Scratch API. Please try again later." },
         { title: 'You are banned from Incubator!', details: 'You can still continue to use the website logged out.' },
     ];
