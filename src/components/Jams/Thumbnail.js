@@ -97,6 +97,16 @@ function ChangeThumbnailButton({ onClick }) {
     );
 }
 
+// https://stackoverflow.com/a/32402438
+function matchWildcard(str, rule) {
+    const escapeRegex = (str) => str.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
+    return new RegExp('^' + rule.split('*').map(escapeRegex).join('.*') + '$').test(str);
+}
+
+function isImageDomainWhitelisted(imageDomain) {
+    return imageDomains.some((whitelistedDomain) => whitelistedDomain === imageDomain || matchWildcard(imageDomain, whitelistedDomain));
+}
+
 export default function Thumbnail({ image, loading, location = 'explore', jam, canChangeThumbnail = false, mutateThumbnailCallback }) {
     const [loadingThumbnail, setLoadingThumbnail] = useState(true);
     const hostname = isValidHttpUrl(image) === false ? null : new URL(image).hostname;
@@ -151,7 +161,7 @@ export default function Thumbnail({ image, loading, location = 'explore', jam, c
                 false
             ) : !image ? null : isValidHttpUrl(image) === false ? (
                 <>Malformed image URL</>
-            ) : imageDomains.includes(hostname) ? (
+            ) : isImageDomainWhitelisted(hostname) ? (
                 false
             ) : (
                 <>
@@ -248,7 +258,7 @@ export default function Thumbnail({ image, loading, location = 'explore', jam, c
             {(loadingThumbnail === true || loading === true) && error === false && (
                 <Skeleton width="100%" aspectRatio="16 / 9" borderRadius={location === 'jam' ? theme.radii[4] : `${theme.radii[4]} ${theme.radii[4]} 0 0`} />
             )}
-            {imageDomains.includes(hostname) && error === false ? (
+            {isImageDomainWhitelisted(hostname) && error === false ? (
                 <Box css={{ display: loadingThumbnail === true ? 'none' : 'auto', position: 'relative' }}>
                     {canChangeThumbnail && <ChangeThumbnailButton onClick={onThumbnailButtonClick} />}
                     <StyledThumbnail

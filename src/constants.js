@@ -30,6 +30,7 @@ export const fetcher = async (...args) => {
     return res.json();
 };
 
-export const imageDomains = ['assets.scratch.mit.edu', 'cdn2.scratch.mit.edu', 'u.cubeupload.com', 'uploads.scratch.mit.edu'];
+// The star (*) character is a placeholder
+export const imageDomains = ['assets.scratch.mit.edu', 'cdn2.scratch.mit.edu', 'u.cubeupload.com', 'uploads.scratch.mit.edu', '*.scratch-wiki.info'];
 
-export const MAXIMUM_UPVOTES_PER_JAM = 3
+export const MAXIMUM_UPVOTES_PER_JAM = 3;
