@@ -63,7 +63,14 @@ export default function ScratchGameJams() {
         mutate: mutateJams,
     } = useJams(
         null,
-        { limit: limit, offset: offset * limit, featured: filters.featured === 'indeterminate' ? undefined : filters.featured, status: filters.status === null ? undefined : filters.status },
+        {
+            limit: limit,
+            offset: offset * limit,
+            featured: filters.featured === 'indeterminate' ? undefined : filters.featured,
+            organization: filters.organization === 'indeterminate' ? undefined : filters.organization,
+            participation: filters.participation === 'indeterminate' ? undefined : filters.participation,
+            status: filters.status === null ? undefined : filters.status,
+        },
         isInitialized,
     );
 
@@ -175,7 +182,7 @@ export default function ScratchGameJams() {
                                             checked={filters['organization']}
                                             onCheckedChange={() => updateFilters('organization', true)}
                                             id="filter-organization"
-                                            disabled={user === undefined || user?.isLoggedIn === false}
+                                            disabled={true/* user === undefined || user?.isLoggedIn === false */}
                                         >
                                             <CheckboxIndicator>
                                                 {filters['organization'] === 'indeterminate' && <DividerHorizontalIcon width={24} height={24} />}
@@ -191,7 +198,7 @@ export default function ScratchGameJams() {
                                             checked={filters['participation']}
                                             onCheckedChange={() => updateFilters('participation', true)}
                                             id="filter-participation"
-                                            disabled={user === undefined || user?.isLoggedIn === false}
+                                            disabled={true/* user === undefined || user?.isLoggedIn === false */}
                                         >
                                             <CheckboxIndicator>
                                                 {filters['participation'] === 'indeterminate' && <DividerHorizontalIcon width={24} height={24} />}

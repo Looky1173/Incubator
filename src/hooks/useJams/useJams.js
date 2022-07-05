@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { fetcher } from '@constants';
 
-// https://stackoverflow.com/a/1714899/14226941
+// https://stackoverflow.com/a/1714899
 const serialize = (obj) => {
     const str = [];
     for (let p in obj) {

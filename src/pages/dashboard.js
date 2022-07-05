@@ -13,7 +13,7 @@ export default function Dashboard() {
 
     function deleteMyAccount() {
         if (confirm('Are you sure you want to delete your account? This action cannot be undone!')) {
-            fetch('/api/user/' + user.name, { method: 'DELETE' })
+            fetch('/api/users/' + user.name, { method: 'DELETE' })
                 .then((response) => response.json())
                 .then((data) => {
                     router.push('/');

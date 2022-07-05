@@ -45,7 +45,7 @@ export default function ScratchEmbed({ projectId }) {
                     {loading === false && project && !project?.code ? (
                         <>
                             <Avatar css={{ width: '4rem', minWidth: '4rem', btlr: '$4', bblr: '$4' }}>
-                                {project && !project?.code && <AvatarImage src={`/api/user/${project?.author?.username}/picture`} alt={`${project?.author?.username}'s profile picture`} />}
+                                {project && !project?.code && <AvatarImage src={`/api/users/${project?.author?.username}/picture`} alt={`${project?.author?.username}'s profile picture`} />}
                                 <AvatarFallback delayMs={2000}>
                                     <AvatarIcon width={40} height={40} />
                                 </AvatarFallback>

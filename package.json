@@ -1,6 +1,6 @@
 {
     "name": "incubator",
-    "version": "1.0.0-rc1",
+    "version": "1.0.0-rc1.3",
     "description": "Scratch Incubator hosts a number of interesting, open-source, and arguably useful experiments and tools.",
     "private": true,
     "scripts": {
