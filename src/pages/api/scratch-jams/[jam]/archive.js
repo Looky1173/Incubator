@@ -7,14 +7,14 @@ import { isObjectEmpty, isObject } from '@utils/object';
 import clientPromise from '@database';
 
 export default withIronSessionApiRoute(async (req, res) => {
-    const slug = req.query.jam;
+    const { jam } = req.query;
     const client = await clientPromise;
     const Database = client.db();
 
     const isAdmin = (await getUserData(Database, req.session?.user?.name))?.admin;
-    const isOrganizer = await isScratchJamOrganizer(Database, slug, req.session?.user?.name);
+    const isOrganizer = await isScratchJamOrganizer(Database, jam, req.session?.user?.name);
 
-    const jam = await getScratchGameJam(Database, slug, req.session?.user?.name);
+    const jam = await getScratchGameJam(Database, jam, req.session?.user?.name);
 
     if (req.method === 'GET') {
         let body = req.body;
@@ -24,7 +24,7 @@ export default withIronSessionApiRoute(async (req, res) => {
         if (!isOrganizer && !isAdmin) return res.status(403).json({ error: 'Insufficient permissions' });
 
         try {
-            await archiveScratchJam(Database, slug[0], body.archived);
+            await archiveScratchJam(Database, jam, body.archived);
         } catch (error) {
             return res.status(400).json({ error });
         }
