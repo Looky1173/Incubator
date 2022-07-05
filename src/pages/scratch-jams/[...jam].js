@@ -153,7 +153,7 @@ function JamHosts({ hosts, isOrganizer, isAdmin, user, addHost, transferHost, re
                         .map((host, index) => (
                             <Flex align="center" css={{ overflow: 'hidden' }} key={index}>
                                 <Avatar css={{ width: '4rem', minWidth: '4rem', btlr: '$4', bblr: '$4' }}>
-                                    <AvatarImage src={`/api/user/${host.name}/picture`} alt={`${host.name}'s profile picture`} />
+                                    <AvatarImage src={`/api/users/${host.name}/picture`} alt={`${host.name}'s profile picture`} />
                                     <AvatarFallback delayMs={2000}>
                                         <AvatarIcon width={40} height={40} />
                                     </AvatarFallback>
