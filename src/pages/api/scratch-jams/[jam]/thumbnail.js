@@ -15,7 +15,7 @@ export default withIronSessionApiRoute(async (req, res) => {
     const isOrganizer = await isScratchJamOrganizer(Database, jam, req.session?.user?.name);
 
     switch (req.method) {
-        case 'GET': {
+        case 'PUT': {
             let body = req.body;
             if (isObjectEmpty(body)) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing body with thumbnail URL' } });
             if (!isObject(body)) body = JSON.parse(body);
