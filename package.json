@@ -5,7 +5,8 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
-        "start": "next start"
+        "start": "next start",
+        "lint": "next lint"
     },
     "dependencies": {
         "@radix-ui/colors": "^0.1.8",
