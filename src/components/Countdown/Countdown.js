@@ -54,7 +54,7 @@ const ShowCounter = ({ days, hours, minutes, seconds, variant = null }) => {
 };
 
 const CountdownTimer = ({ targetDate, onExpiry, variant = null }) => {
-    const initialTimeLeft = useMemo(() => calculateTimeLeft(targetDate), []);
+    const initialTimeLeft = useMemo(() => calculateTimeLeft(targetDate), [targetDate]);
 
     const [timeLeft, setTimeLeft] = useState(initialTimeLeft);
 
@@ -72,7 +72,7 @@ const CountdownTimer = ({ targetDate, onExpiry, variant = null }) => {
         return () => {
             clearInterval(interval);
         };
-    }, [targetDate]);
+    }, [targetDate, onExpiry]);
 
     return <ShowCounter days={timeLeft.days} hours={timeLeft.hours} minutes={timeLeft.minutes} seconds={timeLeft.seconds} variant={variant} />;
 };
