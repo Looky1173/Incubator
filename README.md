@@ -1,34 +1,43 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Incubator
 
-## Getting Started
+Scratch Incubator hosts a number of interesting, open-source, and arguably useful experiments and tools. It's also a website to organize Scratch game jams!
 
-First, run the development server:
+Incubator is written in Next.js and React.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+## Contributing
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+All contributions are welcome. If you have an idea for a new feature or experiment, [open a discussion](https://github.com/Looky1173/Incubator/discussions/new) about it. If your idea is approved you can help coding it and submit a pull request (PR) once you're done. You can also help squash bugs and other issues.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+Please use Yarn as your package manager when working on Incubator.
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+### Folder structure and purposes
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+This will help you find your way around the codebase.
 
-## Learn More
+- root directory
+  - [`public`](https://nextjs.org/docs/basic-features/static-file-serving) - Contains static files, such as the favicon.
+  - `src` - Contains the main source code of Incubator
+    - `components` - Custom React components specifically crafted for Incubator
+      - `Jam` - Components for Scratch game jams
+    - `database` - Driver files that directly interact with the MongoDB
+      - `SCHEMAS.md` - Database document structure
+    - `design-system` - Reusable components for building user interfaces
+    - `hooks` - Custom React hooks for Incubator
+    - [`pages`](https://nextjs.org/docs/basic-features/pages) - Contains the pages of the website, which are mapped to the directory structure of this folder
+      - `api` - All API routes
+      - `scratch-jams` - Routes related to Scratch game jams
+      - `index.js` - The homepage
+    - `utils` - Various utility files and methods
+    - `constants.js` - Contains global constants, such as the array of whitelisted image hosts for Scratch game jams
+  - `.env.local` - This file is not uploaded to GitHub. It is necessary for running a local instance of Incubator. It should contain the following *env* key-value pairs:
+    - `SECRET_COOKIE_PASSWORD`: random password for encrypting [`iron-session`](https://github.com/vvo/iron-session) cookies;
+    - `WEBSITE_URL`: the URL of the website. On *localhost*, this should be set to `http://localhost:3000`;
+    - `MONGODB_URI`: the MongoDB connection URI. This should be in the following format: `mongodb+srv://<username>:<password>@<connection-uri>.mongodb.net/<database>?retryWrites=true&w=majority`.
+  - `jsconfig.json` - Import path aliases (e.g., `import { Box } from '@design-system'`)
+  - [`next.config.json`](https://nextjs.org/docs/api-reference/next.config.js/introduction) - Important Next.js configuration options. This file should generally not be touched.
+  - [`package.json`](https://docs.npmjs.com/cli/v7/configuring-npm/package-json)
 
-To learn more about Next.js, take a look at the following resources:
+## Credits
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+[Looky1173](https://github.com/Looky1173)
+[Weredime](https://github.com/Weredime)
