@@ -1548,22 +1548,18 @@ export default function Page({ fallback, archived = false }) {
 
 import { withIronSessionSsr } from 'iron-session/next';
 import { sessionOptions } from '@constants';
-import clientPromise from '@database';
 
 import { getScratchGameJam, isScratchJamOrganizer } from '@database/scratch-jams';
 import { getUserData } from '@database/users';
 
 export const getServerSideProps = withIronSessionSsr(async function getServerSideProps({ req, params }) {
-    const client = await clientPromise;
-    const Database = client.db();
-
     const jamId = params.jam[0];
-    const jam = await getScratchGameJam(Database, jamId, req.session?.user?.name);
-    const isAdmin = (await getUserData(Database, req.session?.user?.name))?.admin;
+    const jam = await getScratchGameJam(jamId, req.session?.user?.name);
+    const isAdmin = (await getUserData(req.session?.user?.name))?.admin;
 
     if (params.jam?.[1] === 'settings') {
         if (!req.session.user) return { redirect: { destination: `/scratch-jams/${jamId}` } };
-        const isOrganizer = await isScratchJamOrganizer(Database, jamId, req.session.user.name);
+        const isOrganizer = await isScratchJamOrganizer(jamId, req.session.user.name);
         if (isOrganizer !== true && isAdmin !== true) return { redirect: { destination: `/scratch-jams/${jamId}` } };
     }
 
