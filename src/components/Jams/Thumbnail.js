@@ -31,7 +31,7 @@ function ThumbnailFallback({ error = undefined, location, jamId }) {
                 <Text css={{ color: 'inherit', textAlign: 'center' }}>
                     {error === null ? (
                         <>
-                            This game jam doesn't have a cover image. Ask{' '}
+                            This game jam doesn&apos;t have a cover image. Ask{' '}
                             <NextLink href={`/scratch-jams/${jamId}/hosts`} passHref>
                                 <Link variant="accent" onClick={stopClickPropagation}>
                                     a host
@@ -188,7 +188,7 @@ export default function Thumbnail({ image, loading, location = 'explore', jam, c
                 </>
             ),
         );
-    }, [image, loading]);
+    }, [image, loading, hostname]);
 
     return (
         <>
@@ -266,7 +266,7 @@ export default function Thumbnail({ image, loading, location = 'explore', jam, c
                         ref={imageRef}
                         onLoad={() => setLoadingThumbnail(false)}
                         css={{ borderRadius: location === 'jam' && '$4' }}
-                        onError={() => setError(<>Incubator couldn't retrieve this cover image. This is not an issue with Incubator, but with the external server hosting the requested image.</>)}
+                        onError={() => setError(<>Incubator couldn&apos;t retrieve this cover image. This is not an issue with Incubator, but with the external server hosting the requested image.</>)}
                     />
                 </Box>
             ) : (

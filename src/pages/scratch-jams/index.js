@@ -59,7 +59,6 @@ export default function ScratchGameJams() {
     const {
         data,
         isLoading,
-        isError,
         mutate: mutateJams,
     } = useJams(
         null,
@@ -80,13 +79,13 @@ export default function ScratchGameJams() {
             jumpToPage(Number(router.query.page || 1));
             setIsInitialized(true);
         }
-    }, [router.isReady]);
+    }, [router.isReady, jumpToPage, router.query.page, router.query.limit]);
 
     useEffect(() => {
         if (router.isReady === true) {
             setLimit(router.query.limit || 10);
         }
-    }, [router.isReady, router]);
+    }, [router.isReady, router.query.limit]);
 
     useEffect(() => {
         if (data) {
@@ -96,23 +95,19 @@ export default function ScratchGameJams() {
 
     useEffect(() => {
         if (router.isReady === true) {
-            updateURLQueryParams();
-        }
-    }, [page, limit]);
-
-    function updateURLQueryParams() {
-        router.push(
-            {
-                pathname: '/scratch-jams',
-                query: {
-                    page: page,
-                    limit: limit,
+            router.push(
+                {
+                    pathname: '/scratch-jams',
+                    query: {
+                        page: page,
+                        limit: limit,
+                    },
                 },
-            },
-            undefined,
-            { shallow: true },
-        );
-    }
+                undefined,
+                { shallow: true },
+            );
+        }
+    }, [router, router.isReady, page, limit]);
 
     return (
         <Layout

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { Box, Button, Flex, TitleAndMetaTags } from '@design-system';
 import { Layout, Hero } from '@components';
 import { useRouter } from 'next/router';
@@ -11,11 +11,12 @@ export default function Home() {
 
     const [toast] = useToast();
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const authErrors = [
         { title: "Couldn't log you in!", details: 'Failed FluffyScratch auth! Keep in mind that the login system currently does not support New Scratchers.' },
         { title: "Couldn't log you in!", details: "Our servers couldn't communicate with FluffyScratch and/or the Scratch API. Please try again later." },
         { title: 'You are banned from Incubator!', details: 'You can still continue to use the website logged out.' },
-    ];
+    ]
 
     useEffect(() => {
         if (router.isReady) {
@@ -40,7 +41,7 @@ export default function Home() {
                 });
             }
         }
-    }, [router.isReady]);
+    }, [router.isReady, authErrors, router.query, toast]);
 
     return (
         <Layout>

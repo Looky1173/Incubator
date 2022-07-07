@@ -50,7 +50,7 @@ export default function Home() {
                             },
                         }}
                     >
-                        Oops, you've run into a non-existent page! What brought you here?
+                        Oops, you&apos;ve run into a non-existent page! What brought you here?
                     </Paragraph>
                 </Container>
             </Section>

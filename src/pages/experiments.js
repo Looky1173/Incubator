@@ -51,7 +51,7 @@ export default function Experiments({ experiments }) {
                 ))}
 
                 <Flex css={{ justifyContent: 'center' }}>
-                    <a target="_blank" href="https://scratch.mit.edu/users/Looky1173/#comments">
+                    <a target="_blank" rel="noreferrer" href="https://scratch.mit.edu/users/Looky1173/#comments">
                         <Button as="a">
                             Suggest an experiment
                             <Box css={{ ml: '$2' }}>
