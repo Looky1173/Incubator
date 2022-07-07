@@ -947,7 +947,7 @@ function ScratchJam({ fallback }) {
 
     const [loadingSubmissions, setLoadingSubmissions] = useState(true);
 
-    const { data: jamStatistics, mutate: mutateStatistics } = useSWR(`/api/scratch-jams/${jamId}/statistics`, fetcher);
+    const { data: jamStatistics, mutate: mutateStatistics } = useSWR(jamId ? `/api/scratch-jams/${jamId}/statistics` : null, fetcher);
 
     const [toast] = useToast();
 
