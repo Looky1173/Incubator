@@ -574,12 +574,13 @@ function NewSubmission({ onBackToSubmissions, jamId, mutate }) {
     const [toast] = useToast();
     const router = useRouter();
 
+    const projectRegex = /https:\/\/scratch\.mit\.edu\/projects\/([0-9]+)/i;
+
     useEffect(() => {
-        const projectRegex = /https:\/\/scratch\.mit\.edu\/projects\/([0-9]+)/i;
         if (!projectUrl || !projectRegex.test(projectUrl)) return setIsProjectIdValid(false);
         setIsProjectIdValid(true);
         setProjectId(projectUrl.match(projectRegex)[1]);
-    }, [setIsProjectIdValid, setProjectId, projectUrl]);
+    }, [projectUrl]);
 
     async function submitProject() {
         setSubmitting(true);
@@ -690,7 +691,7 @@ function JamSubmissions({ onBackToSubmissions, onLoadingChange, jam, isOrganizer
 
         setProjectId(router.query?.project ? parseInt(router.query.project) : null);
         onLoadingChange(false);
-    }, [router.isReady, router, onLoadingChange]);
+    }, [router.isReady, router]);
 
     const showUpvoteManager = jam.settings.allowVoting && (jam.settings.restrictVotingToHosts === false || isOrganizer === false || isOrganizer === true);
     const viewingOwnSubmission = usersProject === projectId;
@@ -1119,7 +1120,7 @@ function ScratchJam({ fallback }) {
             setJamId(router.query.jam[0]);
             setIsInitialized(true);
         }
-    }, [router.isReady, router, findComponentMatchingRoute, isInitialized]);
+    }, [router.isReady, router]);
 
     async function updateJam() {
         return new Promise(async (resolve, reject) => {

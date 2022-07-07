@@ -36,7 +36,7 @@ export default function ScratchEmbed({ projectId }) {
         if (!projectId || error) return setLoading('idle');
         if (isValidating && !project) return setLoading(true);
         if (project) return setLoading(false);
-    }, [error, project, projectId, isValidating]);
+    }, [project, projectId, isValidating]);
 
     return (
         <SkeletonProvider enableAnimation={loading !== 'idle'}>
