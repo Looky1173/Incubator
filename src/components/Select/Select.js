@@ -35,7 +35,6 @@ export const CustomSelect = forwardRef(({ children, ...props }, forwardedRef) =>
         </Select>
     );
 });
-CustomSelect.displayName = "CustomSelect";
 
 export const CustomSelectItem = forwardRef(({ children, ...props }, forwardedRef) => {
     return (
@@ -47,4 +46,3 @@ export const CustomSelectItem = forwardRef(({ children, ...props }, forwardedRef
         </SelectItem>
     );
 });
-CustomSelectItem.displayName = "CustomSelectItem";
