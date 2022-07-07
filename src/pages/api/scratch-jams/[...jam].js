@@ -23,45 +23,41 @@ import {
 import { getUserData } from '@database/users';
 import { isObjectEmpty, isObject } from '@utils/object';
 
-import clientPromise from '@database';
-
 export default withIronSessionApiRoute(async (req, res) => {
     const slug = req.query.jam;
-    const client = await clientPromise;
-    const Database = client.db();
 
-    const isAdmin = (await getUserData(Database, req.session?.user?.name))?.admin;
-    const isOrganizer = await isScratchJamOrganizer(Database, slug[0], req.session?.user?.name);
+    const isAdmin = (await getUserData(req.session?.user?.name))?.admin;
+    const isOrganizer = await isScratchJamOrganizer(slug[0], req.session?.user?.name);
 
-    const jam = await getScratchGameJam(Database, slug[0], req.session?.user?.name);
+    const jam = await getScratchGameJam(slug[0], req.session?.user?.name);
     if (jam.meta?.archived === true && !isAdmin)
         return res.status(403).json({ error: { identifier: 'insufficientPermissions', message: 'You do not have permission to access archived game jams. Only administrators can do that.' } });
 
     if (req.method === 'GET') {
         if (slug.length === 1) {
             // Retrieves the details of the requested game jam
-            const jam = await getScratchGameJam(Database, slug[0], req.session?.user?.name);
+            const jam = await getScratchGameJam(slug[0], req.session?.user?.name);
 
             return jam ? res.status(200).json(jam) : res.status(404).json({ error: { identifier: 'notFound', message: 'Not found' } });
         } else if (slug.length === 2) {
             // Retrieves the submissions or hosts a game jam
             if (slug[1] === 'submissions') {
-                const submissions = await getScratchGameJamSubmissions(Database, slug[0], { limit: req.query.limit, offset: req.query.offset, sort: req.query.sort });
+                const submissions = await getScratchGameJamSubmissions(slug[0], { limit: req.query.limit, offset: req.query.offset, sort: req.query.sort });
                 return res.status(200).json(submissions);
             }
             if (slug[1] === 'hosts') {
-                const hosts = (await getScratchGameJamHosts(Database, slug[0])) || [];
+                const hosts = (await getScratchGameJamHosts(slug[0])) || [];
                 return res.status(200).json({ hosts: hosts, isOrganizer: isOrganizer });
             }
             if (slug[1] === 'statistics') {
-                const statistics = await getScratchGameJamStatistics(Database, slug[0], req.session?.user?.name);
+                const statistics = await getScratchGameJamStatistics(slug[0], req.session?.user?.name);
                 return res.status(200).json(statistics);
             }
         } else if (slug.length === 3 && slug[1] === 'submissions') {
-            const submission = await getScratchGameJamSubmission(Database, slug[0], slug[2]);
+            const submission = await getScratchGameJamSubmission(slug[0], slug[2]);
             return submission ? res.status(200).json(submission) : res.status(404).json({ error: { identifier: 'notFound', message: 'The requested submission could not be found' } });
         } else if (slug.length === 4 && slug[1] === 'submissions' && slug[3] === 'upvotes') {
-            const upvotes = await getScratchGameJamSubmissionUpvotes(Database, slug[0], slug[2], req.session?.user?.name);
+            const upvotes = await getScratchGameJamSubmissionUpvotes(slug[0], slug[2], req.session?.user?.name);
             return res.status(200).json(upvotes);
         }
 
@@ -81,7 +77,7 @@ export default withIronSessionApiRoute(async (req, res) => {
                 if (!body.projectId) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing project ID' } });
 
                 try {
-                    await saveScratchGameJamSubmission(Database, slug[0], body.projectId, req.session.user.name);
+                    await saveScratchGameJamSubmission(slug[0], body.projectId, req.session.user.name);
                 } catch (error) {
                     console.log(error);
                     return res.status(400).json({ error: error });
@@ -96,7 +92,7 @@ export default withIronSessionApiRoute(async (req, res) => {
                 if (!isAdmin && !isOrganizer) return res.status(403).json({ error: 'Insufficient permissions' });
 
                 try {
-                    await createScratchGameJamHost(Database, slug[0], body.username);
+                    await createScratchGameJamHost(slug[0], body.username);
                 } catch (error) {
                     return res.status(400).json({ error: error });
                 }
@@ -104,7 +100,7 @@ export default withIronSessionApiRoute(async (req, res) => {
             }
         } else if (slug.length === 4 && slug[1] === 'submissions' && slug[3] === 'upvotes') {
             try {
-                await saveScratchGameJamSubmissionUpvote(Database, slug[0], slug[2], req.session.user.name);
+                await saveScratchGameJamSubmissionUpvote(slug[0], slug[2], req.session.user.name);
                 return res.status(200).json({ success: true });
             } catch (error) {
                 return res.status(error.identifier === 'notFound' ? 400 : 403).json({ error: error });
@@ -122,7 +118,7 @@ export default withIronSessionApiRoute(async (req, res) => {
             if ((!isOrganizer && !isAdmin) || (body.hasOwnProperty('meta.featured') && !isAdmin)) return res.status(403).json({ error: 'Insufficient permissions' });
 
             try {
-                await updateScratchJam(Database, slug[0], { ...body });
+                await updateScratchJam(slug[0], { ...body });
             } catch (error) {
                 return res.status(400).json({ error: error });
             }
@@ -135,7 +131,7 @@ export default withIronSessionApiRoute(async (req, res) => {
                 if (!body.thumbnailURL) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing thumbnail URL' } });
                 if (!isOrganizer && !isAdmin) return res.status(403).json({ error: 'Insufficient permissions' });
 
-                await changeScratchJamThumbnail(Database, slug[0], body.thumbnailURL);
+                await changeScratchJamThumbnail(slug[0], body.thumbnailURL);
                 return res.status(200).json({ success: true });
             }
             if (slug[1] === 'archive') {
@@ -146,7 +142,7 @@ export default withIronSessionApiRoute(async (req, res) => {
                 if (!isOrganizer && !isAdmin) return res.status(403).json({ error: 'Insufficient permissions' });
 
                 try {
-                    await archiveScratchJam(Database, slug[0], body.archived);
+                    await archiveScratchJam(slug[0], body.archived);
                 } catch (error) {
                     return res.status(400).json({ error: error });
                 }
@@ -157,12 +153,12 @@ export default withIronSessionApiRoute(async (req, res) => {
             if (isObjectEmpty(body)) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing body with host username' } });
             if (!isObject(body)) body = JSON.parse(body);
             if (!body.username) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing host username' } });
-            const isNewHostAnOrganizer = await isScratchJamOrganizer(Database, slug[0], body.username);
+            const isNewHostAnOrganizer = await isScratchJamOrganizer(slug[0], body.username);
             if (isNewHostAnOrganizer === null) return res.status(400).json({ error: { identifier: 'nonexistentHost', message: 'The given host does not exist' } });
             if (isNewHostAnOrganizer === true) return res.status(400).json({ error: { identifier: 'nonexistentHost', message: 'The given host is already the organizer' } });
             if (!isOrganizer && !isAdmin) return res.status(403).json({ error: 'Insufficient permissions' });
 
-            await makeScratchJamOrganizer(Database, slug[0], body.username);
+            await makeScratchJamOrganizer(slug[0], body.username);
             return res.status(200).json({ success: true });
         }
         return res.status(404).json({ error: 'Method not found' });
@@ -173,7 +169,7 @@ export default withIronSessionApiRoute(async (req, res) => {
             if (!isAdmin) return res.status(403).json({ error: 'Insufficient permissions' });
 
             try {
-                await deleteScratchJam(Database, slug[0]);
+                await deleteScratchJam(slug[0]);
             } catch (error) {
                 return res.status(400).json({ error: error });
             }
@@ -183,7 +179,7 @@ export default withIronSessionApiRoute(async (req, res) => {
                 // Removes the current thumbnail
                 if (!isOrganizer && !isAdmin) return res.status(403).json({ error: 'Insufficient permissions' });
 
-                await changeScratchJamThumbnail(Database, slug[0], null);
+                await changeScratchJamThumbnail(slug[0], null);
                 return res.status(200).json({ success: true });
             }
             if (slug[1] === 'hosts') {
@@ -191,31 +187,31 @@ export default withIronSessionApiRoute(async (req, res) => {
                 if (isObjectEmpty(body)) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing body with host username' } });
                 if (!isObject(body)) body = JSON.parse(body);
                 if (!body.username) return res.status(400).json({ error: { identifier: 'missingParameters', message: 'Missing host username' } });
-                const isHostToBeRemovedAnOrganizer = await isScratchJamOrganizer(Database, slug[0], body.username);
+                const isHostToBeRemovedAnOrganizer = await isScratchJamOrganizer(slug[0], body.username);
                 if (isHostToBeRemovedAnOrganizer === null) return res.status(400).json({ error: { identifier: 'nonexistentHost', message: 'The given host does not exist' } });
                 if (isHostToBeRemovedAnOrganizer === true)
                     return res.status(400).json({ error: { identifier: 'nonexistentHost', message: 'The given host cannot be removed because they are the organizer' } });
                 if (!isOrganizer && !isAdmin && body.username !== req.session.user.name) return res.status(403).json({ error: 'Insufficient permissions' });
 
-                await removeScratchJamHost(Database, slug[0], body.username);
+                await removeScratchJamHost(slug[0], body.username);
                 return res.status(200).json({ success: true });
             }
         } else if (slug.length === 3 && slug[1] === 'submissions') {
-            const statistics = await getScratchGameJamStatistics(Database, slug[0], req.session.user.name);
+            const statistics = await getScratchGameJamStatistics(slug[0], req.session.user.name);
             const removingOwnSubmissions = statistics.participation.project === slug[2];
             const canRemoveSubmission = removingOwnSubmissions || isAdmin || isOrganizer !== null;
 
             if (!canRemoveSubmission) return res.status(403).json({ error: 'Insufficient permissions' });
 
             try {
-                await removeScratchGameJamSubmission(Database, slug[0], slug[2]);
+                await removeScratchGameJamSubmission(slug[0], slug[2]);
                 return res.status(200).json({ success: true });
             } catch (error) {
                 return res.status(400).json({ error: error });
             }
         } else if (slug.length === 4 && slug[1] === 'submissions' && slug[3] === 'upvotes') {
             try {
-                await removeScratchGameJamSubmissionUpvote(Database, slug[0], slug[2], req.session.user.name);
+                await removeScratchGameJamSubmissionUpvote(slug[0], slug[2], req.session.user.name);
                 return res.status(200).json({ success: true });
             } catch (error) {
                 return res.status(400).json({ error: error });

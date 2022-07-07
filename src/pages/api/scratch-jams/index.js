@@ -4,14 +4,9 @@ import { getScratchGameJams } from '@database/scratch-jams';
 import { createScratchJam } from '@database/scratch-jams';
 import { isObjectEmpty, isObject } from '@utils/object';
 
-import clientPromise from '@database';
-
 export default withIronSessionApiRoute(async (req, res) => {
-    const client = await clientPromise;
-    const Database = client.db();
-
     if (req.method === 'GET') {
-        let jams = await getScratchGameJams(Database, req.query.limit, req.query.offset, { featured: req.query.featured, status: req.query.status }, req.session?.user?.name);
+        let jams = await getScratchGameJams(req.query.limit, req.query.offset, { featured: req.query.featured, status: req.query.status }, req.session?.user?.name);
 
         return res.status(200).json(jams);
     }
@@ -24,7 +19,7 @@ export default withIronSessionApiRoute(async (req, res) => {
         if (!isObject(body)) body = JSON.parse(body);
 
         try {
-            const insertedId = await createScratchJam(Database, { ...body }, req.session.user.name);
+            const insertedId = await createScratchJam({ ...body }, req.session.user.name);
             return res.status(200).json({ success: true, insertedId: insertedId });
         } catch (error) {
             console.log(error)

@@ -2,17 +2,12 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '@constants';
 import { getUserData } from '@database/users';
 
-import clientPromise from '@database';
-
 export default withIronSessionApiRoute(userRoute, sessionOptions);
 
 async function userRoute(req, res) {
-    const client = await clientPromise;
-    const Database = client.db();
-
     if (req.method === 'GET') {
         if (req.session.user) {
-            let user = await getUserData(Database, req.session.user.name);
+            let user = await getUserData(req.session.user.name);
             if (!user) return res.json({ isLoggedIn: false });
 
             let scratchResponse = await fetch(`https://api.scratch.mit.edu/users/${req.session.user.name}/`);

@@ -1,9 +1,15 @@
 import { databaseCollections } from '@constants';
+import clientPromise from './mongodb';
 
-export function getUserData(db, username) {
+const client = await clientPromise;
+const Database = client.db();
+
+const Users = Database.collection(databaseCollections['users']);
+
+export function getUserData(username) {
     return new Promise(async (resolve, reject) => {
         try {
-            const user = await db.collection(databaseCollections.users).findOne({
+            const user = await Users.findOne({
                 name: username,
             });
             resolve(user);
@@ -13,10 +19,10 @@ export function getUserData(db, username) {
     });
 }
 
-export function createUser(db, document) {
+export function createUser(document) {
     return new Promise(async (resolve, reject) => {
         try {
-            await db.collection(databaseCollections.users).insertOne(document);
+            await Users.insertOne(document);
             resolve();
         } catch (error) {
             reject(Error(error));
@@ -24,10 +30,10 @@ export function createUser(db, document) {
     });
 }
 
-export function deleteUser(db, username) {
+export function deleteUser(username) {
     return new Promise(async (resolve, reject) => {
         try {
-            await db.collection(databaseCollections.users).deleteOne({ name: username });
+            await Users.deleteOne({ name: username });
             resolve();
         } catch (error) {
             reject(Error(error));

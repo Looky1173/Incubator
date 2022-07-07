@@ -1,10 +1,20 @@
 import { databaseCollections, MAXIMUM_UPVOTES_PER_JAM } from '@constants';
 import { ObjectId } from 'mongodb';
 import { getUserData } from './users';
+import clientPromise from './mongodb';
+
+const client = await clientPromise;
+const Database = client.db();
+
+const Jams = Database.collection(databaseCollections['scratch-jams']);
+const Hosts = Database.collection(databaseCollections['scratch-jam-hosts']);
+const Submissions = Database.collection(databaseCollections['scratch-jam-submissions']);
+const Upvotes = Database.collection(databaseCollections['scratch-jam-upvotes']);
+const Users = Database.collection(databaseCollections['users']);
 
 const isBoolean = (val) => val === false || val === true;
 
-const getJamsHostedByUsername = (db, username) => {
+const getJamsHostedByUsername = (username) => {
     return new Promise(async (resolve, reject) => {
         try {
             const pipeline = [
@@ -29,7 +39,7 @@ const getJamsHostedByUsername = (db, username) => {
                 },
             ];
 
-            const aggregationResultCursor = await db.collection(databaseCollections['scratch-jam-hosts']).aggregate(pipeline);
+            const aggregationResultCursor = await Hosts.aggregate(pipeline);
             const aggregationResult = await aggregationResultCursor.toArray();
 
             resolve(aggregationResult?.[0]?.array || []);
@@ -39,7 +49,7 @@ const getJamsHostedByUsername = (db, username) => {
     });
 };
 
-export function getScratchGameJams(db, limit = 40, offset = 0, filters = {}, username) {
+export function getScratchGameJams(limit = 40, offset = 0, filters = {}, username) {
     return new Promise(async (resolve, reject) => {
         try {
             if (offset < 0) offset = 0;
@@ -79,15 +89,15 @@ export function getScratchGameJams(db, limit = 40, offset = 0, filters = {}, use
             // Don't return archived game jams
             filterQuery['meta.archived'] = { $ne: true };
 
-            let jamsCount = await db.collection(databaseCollections['scratch-jams']).countDocuments(filterQuery);
+            let jamsCount = await Jams.countDocuments(filterQuery);
 
-            let jamsCursor = await db.collection(databaseCollections['scratch-jams']).find(filterQuery).sort({ 'dates.start': -1, _id: -1 }).skip(Number(offset)).limit(Number(limit));
+            let jamsCursor = await Jams.find(filterQuery).sort({ 'dates.start': -1, _id: -1 }).skip(Number(offset)).limit(Number(limit));
             let jams = await jamsCursor.toArray();
 
-            const isAdmin = (await getUserData(db, username))?.admin;
+            const isAdmin = (await getUserData(username))?.admin;
             if (!isAdmin) {
                 // If the game jam has not started yet and mystery mode is enabled, don't return the game jam's body, except if the user is a host, co-host, or an administrator
-                const jamsHostedByUsername = await getJamsHostedByUsername(db, username);
+                const jamsHostedByUsername = await getJamsHostedByUsername(username);
 
                 let jamsHostedByUsernameObject = [];
                 jamsHostedByUsername.forEach((value) => {
@@ -107,12 +117,12 @@ export function getScratchGameJams(db, limit = 40, offset = 0, filters = {}, use
     });
 }
 
-export function getScratchGameJam(db, jamId, username) {
+export function getScratchGameJam(jamId, username) {
     return new Promise(async (resolve, reject) => {
         try {
-            let jam = await db.collection(databaseCollections['scratch-jams']).findOne({ _id: ObjectId(jamId) });
-            const isOrganizer = await isScratchJamOrganizer(db, jamId, username);
-            const isAdmin = (await getUserData(db, username))?.admin;
+            let jam = await Jams.findOne({ _id: ObjectId(jamId) });
+            const isOrganizer = await isScratchJamOrganizer(jamId, username);
+            const isAdmin = (await getUserData(username))?.admin;
             if (jam.settings.enableMystery === true && isOrganizer === null && !isAdmin && new Date(jam.dates.start) > new Date()) delete jam.content.body;
 
             resolve(jam);
@@ -122,7 +132,7 @@ export function getScratchGameJam(db, jamId, username) {
     });
 }
 
-export function getScratchGameJamSubmissions(db, jamId, options = { limit: 6, offset: 0, sort: null }) {
+export function getScratchGameJamSubmissions(jamId, options = { limit: 6, offset: 0, sort: null }) {
     return new Promise(async (resolve, reject) => {
         try {
             if (options.offset < 0) options.offset = 0;
@@ -150,7 +160,7 @@ export function getScratchGameJamSubmissions(db, jamId, options = { limit: 6, of
                     },
                 ];
 
-                const aggregationResultCursor = await db.collection(databaseCollections['scratch-jam-upvotes']).aggregate(pipeline);
+                const aggregationResultCursor = await Upvotes.aggregate(pipeline);
                 const aggregationResult = await aggregationResultCursor.toArray();
 
                 upvoteSortRankings = aggregationResult.map((x) => x.project);
@@ -162,10 +172,8 @@ export function getScratchGameJamSubmissions(db, jamId, options = { limit: 6, of
             };
 
             let submissionsCursor = sortByUpvotes
-                ? await db.collection(databaseCollections['scratch-jam-submissions']).find({ jam: ObjectId(jamId) }).sort(getSortQuery('oldest'))
-                : await db
-                      .collection(databaseCollections['scratch-jam-submissions'])
-                      .find({ jam: ObjectId(jamId) })
+                ? await Submissions.find({ jam: ObjectId(jamId) }).sort(getSortQuery('oldest'))
+                : await Submissions.find({ jam: ObjectId(jamId) })
                       .sort(getSortQuery(options.sort))
                       .skip(Number(options.offset))
                       .limit(Number(options.limit));
@@ -189,10 +197,10 @@ export function getScratchGameJamSubmissions(db, jamId, options = { limit: 6, of
     });
 }
 
-export function getScratchGameJamSubmission(db, jamId, project) {
+export function getScratchGameJamSubmission(jamId, project) {
     return new Promise(async (resolve, reject) => {
         try {
-            const submission = await db.collection(databaseCollections['scratch-jam-submissions']).findOne({ jam: ObjectId(jamId), project: Number(project) });
+            const submission = await Submissions.findOne({ jam: ObjectId(jamId), project: Number(project) });
 
             resolve(submission);
         } catch (error) {
@@ -201,10 +209,10 @@ export function getScratchGameJamSubmission(db, jamId, project) {
     });
 }
 
-export function saveScratchGameJamSubmission(db, jamId, projectId, author) {
+export function saveScratchGameJamSubmission(jamId, projectId, author) {
     return new Promise(async (resolve, reject) => {
         try {
-            const jam = await db.collection(databaseCollections['scratch-jams']).findOne({ _id: ObjectId(jamId) });
+            const jam = await Jams.findOne({ _id: ObjectId(jamId) });
             // Make sure that the specified game jam exists
             if (!jam) return reject({ identifier: 'notFound', message: 'The specified game jam does not exist' });
 
@@ -213,7 +221,7 @@ export function saveScratchGameJamSubmission(db, jamId, projectId, author) {
             if (!(new Date(jam.dates.start) <= now && now < new Date(jam.dates.end))) return reject({ identifier: 'inactiveGameJam', message: 'You can only submit projects to ongoing game jams' });
 
             // Make sure that the user hasn't already submitted a project to the specified game jam
-            if ((await db.collection(databaseCollections['scratch-jam-submissions']).countDocuments({ jam: ObjectId(jamId), author: author })) > 0)
+            if ((await Submissions.countDocuments({ jam: ObjectId(jamId), author: author })) > 0)
                 return reject({ identifier: 'alreadyParticipating', message: 'You have already submitted a project to this game jam' });
 
             const project = await (await fetch(`https://api.scratch.mit.edu/projects/${projectId}`)).json();
@@ -226,7 +234,7 @@ export function saveScratchGameJamSubmission(db, jamId, projectId, author) {
             // Make sure that it is indeed the user who has created the project
             if (project.author.username !== author) return reject({ identifier: 'falseProjectOwnership', message: 'Sorry, you can only submit projects that you created' });
 
-            await db.collection(databaseCollections['scratch-jam-submissions']).insertOne({ jam: ObjectId(jamId), project: Number(projectId), author: author, meta: { submitted: new Date() } });
+            await Submissions.insertOne({ jam: ObjectId(jamId), project: Number(projectId), author: author, meta: { submitted: new Date() } });
 
             resolve();
         } catch (error) {
@@ -235,10 +243,10 @@ export function saveScratchGameJamSubmission(db, jamId, projectId, author) {
     });
 }
 
-export function getScratchGameJamHosts(db, jamId) {
+export function getScratchGameJamHosts(jamId) {
     return new Promise(async (resolve, reject) => {
         try {
-            const hostsCursor = await db.collection(databaseCollections['scratch-jam-hosts']).find({ jam: ObjectId(jamId) });
+            const hostsCursor = Hosts.find({ jam: ObjectId(jamId) });
             const hosts = await hostsCursor.toArray();
             resolve(hosts);
         } catch (error) {
@@ -247,10 +255,10 @@ export function getScratchGameJamHosts(db, jamId) {
     });
 }
 
-export function isScratchJamOrganizer(db, jamId, username) {
+export function isScratchJamOrganizer(jamId, username) {
     return new Promise(async (resolve, reject) => {
         try {
-            const host = await db.collection(databaseCollections['scratch-jam-hosts']).findOne({ jam: ObjectId(jamId), name: username });
+            const host = await Hosts.findOne({ jam: ObjectId(jamId), name: username });
             resolve(isBoolean(host?.organizer) ? host.organizer : null);
         } catch (error) {
             reject(error);
@@ -258,17 +266,14 @@ export function isScratchJamOrganizer(db, jamId, username) {
     });
 }
 
-export function createScratchGameJamHost(db, jamId, hostUsername) {
+export function createScratchGameJamHost(jamId, hostUsername) {
     return new Promise(async (resolve, reject) => {
         try {
-            if (await db.collection(databaseCollections['scratch-jam-hosts']).findOne({ jam: ObjectId(jamId), name: hostUsername }))
-                return reject({ identifier: 'hostExists', message: 'The specified user is already a host of the given game jam' });
-            if (!(await db.collection(databaseCollections['scratch-jams']).findOne({ _id: ObjectId(jamId) })))
-                return reject({ identifier: 'nonexistentJam', message: 'The specified jam does not exist' });
-            if (!(await db.collection(databaseCollections['users']).findOne({ name: hostUsername })))
-                return reject({ identifier: 'nonexistentUser', message: "The specified user does not exist in Incubator's database" });
+            if (await Hosts.findOne({ jam: ObjectId(jamId), name: hostUsername })) return reject({ identifier: 'hostExists', message: 'The specified user is already a host of the given game jam' });
+            if (!(await Jams.findOne({ _id: ObjectId(jamId) }))) return reject({ identifier: 'nonexistentJam', message: 'The specified jam does not exist' });
+            if (!(await Users.findOne({ name: hostUsername }))) return reject({ identifier: 'nonexistentUser', message: "The specified user does not exist in Incubator's database" });
 
-            await db.collection(databaseCollections['scratch-jam-hosts']).insertOne({ jam: ObjectId(jamId), name: hostUsername, organizer: false });
+            await Hosts.insertOne({ jam: ObjectId(jamId), name: hostUsername, organizer: false });
             resolve();
         } catch (error) {
             reject(error);
@@ -276,11 +281,11 @@ export function createScratchGameJamHost(db, jamId, hostUsername) {
     });
 }
 
-export function makeScratchJamOrganizer(db, jamId, newHostUsername) {
+export function makeScratchJamOrganizer(jamId, newHostUsername) {
     return new Promise(async (resolve, reject) => {
         try {
-            await db.collection(databaseCollections['scratch-jam-hosts']).updateMany({ jam: ObjectId(jamId), organizer: true }, { $set: { organizer: false } });
-            await db.collection(databaseCollections['scratch-jam-hosts']).updateOne({ jam: ObjectId(jamId), name: newHostUsername }, { $set: { organizer: true } });
+            await Hosts.updateMany({ jam: ObjectId(jamId), organizer: true }, { $set: { organizer: false } });
+            await Hosts.updateOne({ jam: ObjectId(jamId), name: newHostUsername }, { $set: { organizer: true } });
             resolve();
         } catch (error) {
             reject(error);
@@ -288,10 +293,10 @@ export function makeScratchJamOrganizer(db, jamId, newHostUsername) {
     });
 }
 
-export function removeScratchJamHost(db, jamId, hostToBeRemoved) {
+export function removeScratchJamHost(jamId, hostToBeRemoved) {
     return new Promise(async (resolve, reject) => {
         try {
-            await db.collection(databaseCollections['scratch-jam-hosts']).deleteOne({ jam: ObjectId(jamId), name: hostToBeRemoved });
+            await Hosts.deleteOne({ jam: ObjectId(jamId), name: hostToBeRemoved });
             resolve();
         } catch (error) {
             reject(error);
@@ -299,10 +304,10 @@ export function removeScratchJamHost(db, jamId, hostToBeRemoved) {
     });
 }
 
-export function changeScratchJamThumbnail(db, jamId, thumbnailURL) {
+export function changeScratchJamThumbnail(jamId, thumbnailURL) {
     return new Promise(async (resolve, reject) => {
         try {
-            await db.collection(databaseCollections['scratch-jams']).updateOne({ _id: ObjectId(jamId) }, { $set: { 'content.headerImage': thumbnailURL } });
+            await Jams.updateOne({ _id: ObjectId(jamId) }, { $set: { 'content.headerImage': thumbnailURL } });
             resolve();
         } catch (error) {
             reject(error);
@@ -417,7 +422,7 @@ const validateJamSchema = (schema, data, miscellaneous) => {
     return { success: true, validData: validData };
 };
 
-export function createScratchJam(db, jamContent, creator) {
+export function createScratchJam(jamContent, creator) {
     return new Promise(async (resolve, reject) => {
         const dateDetails = { start: jamContent['dates.start'] || null, end: jamContent['dates.end'] || null };
 
@@ -439,7 +444,7 @@ export function createScratchJam(db, jamContent, creator) {
             delete newJam.success;
             newJam = newJam.validData;
 
-            const result = await db.collection(databaseCollections['scratch-jams']).insertOne({
+            const result = await Jams.insertOne({
                 name: newJam.name,
                 content: { description: newJam['content.description'], body: newJam['content.body'], headerImage: newJam['content.headerImage'] },
                 dates: {
@@ -458,7 +463,7 @@ export function createScratchJam(db, jamContent, creator) {
                     updated: new Date(),
                 },
             });
-            await db.collection(databaseCollections['scratch-jam-hosts']).insertOne({ jam: ObjectId(result.insertedId), name: creator, organizer: true });
+            await Hosts.insertOne({ jam: ObjectId(result.insertedId), name: creator, organizer: true });
 
             resolve(result.insertedId);
         } catch (error) {
@@ -467,9 +472,9 @@ export function createScratchJam(db, jamContent, creator) {
     });
 }
 
-export function updateScratchJam(db, jamId, updates) {
+export function updateScratchJam(jamId, updates) {
     return new Promise(async (resolve, reject) => {
-        const jam = await db.collection(databaseCollections['scratch-jams']).findOne({ _id: ObjectId(jamId) });
+        const jam = await Jams.findOne({ _id: ObjectId(jamId) });
         const dateDetails = { start: updates['dates.start'] || jam?.dates.start, end: updates['dates.end'] || jam?.dates.end };
 
         try {
@@ -489,7 +494,7 @@ export function updateScratchJam(db, jamId, updates) {
             jamUpdates = jamUpdates.validData;
             jamUpdates = { ...jamUpdates, 'meta.updated': new Date() };
 
-            await db.collection(databaseCollections['scratch-jams']).updateOne({ _id: ObjectId(jamId) }, { $set: jamUpdates });
+            await Jams.updateOne({ _id: ObjectId(jamId) }, { $set: jamUpdates });
             resolve();
         } catch (error) {
             reject(error);
@@ -497,11 +502,11 @@ export function updateScratchJam(db, jamId, updates) {
     });
 }
 
-export function archiveScratchJam(db, jamId, archived) {
+export function archiveScratchJam(jamId, archived) {
     return new Promise(async (resolve, reject) => {
         try {
             if (isBoolean(archived)) {
-                await db.collection(databaseCollections['scratch-jams']).updateOne({ _id: ObjectId(jamId) }, { $set: { 'meta.archived': archived } });
+                await Jams.updateOne({ _id: ObjectId(jamId) }, { $set: { 'meta.archived': archived } });
                 resolve();
             } else {
                 reject({ identifier: 'badValue', message: `Expected a boolean, got ${typeof archived}` });
@@ -512,13 +517,13 @@ export function archiveScratchJam(db, jamId, archived) {
     });
 }
 
-export function deleteScratchJam(db, jamId) {
+export function deleteScratchJam(jamId) {
     return new Promise(async (resolve, reject) => {
         try {
-            await db.collection(databaseCollections['scratch-jams']).deleteOne({ _id: ObjectId(jamId) });
-            await db.collection(databaseCollections['scratch-jam-hosts']).deleteMany({ jam: ObjectId(jamId) });
-            await db.collection(databaseCollections['scratch-jam-submissions']).deleteMany({ jam: ObjectId(jamId) });
-            await db.collection(databaseCollections['scratch-jam-upvotes']).deleteMany({ jam: ObjectId(jamId) });
+            await Jams.deleteOne({ _id: ObjectId(jamId) });
+            await Hosts.deleteMany({ jam: ObjectId(jamId) });
+            await Submissions.deleteMany({ jam: ObjectId(jamId) });
+            await Upvotes.deleteMany({ jam: ObjectId(jamId) });
             resolve();
         } catch (error) {
             reject(error);
@@ -526,19 +531,19 @@ export function deleteScratchJam(db, jamId) {
     });
 }
 
-export function getScratchGameJamStatistics(db, jamId, username = undefined) {
+export function getScratchGameJamStatistics(jamId, username = undefined) {
     return new Promise(async (resolve, reject) => {
         try {
-            const numberOfSubmissions = await db.collection(databaseCollections['scratch-jam-submissions']).countDocuments({ jam: ObjectId(jamId) });
-            const numberOfUpvotes = await db.collection(databaseCollections['scratch-jam-upvotes']).countDocuments({ jam: ObjectId(jamId) });
+            const numberOfSubmissions = await Submissions.countDocuments({ jam: ObjectId(jamId) });
+            const numberOfUpvotes = await Upvotes.countDocuments({ jam: ObjectId(jamId) });
 
             let response = { submissions: numberOfSubmissions, upvotes: numberOfUpvotes, feedback: 0 };
 
             if (username) {
-                const participation = await db.collection(databaseCollections['scratch-jam-submissions']).findOne({ jam: ObjectId(jamId), author: username });
+                const participation = await Submissions.findOne({ jam: ObjectId(jamId), author: username });
                 response = participation ? { ...response, participation: { hasParticipated: true, project: participation.project } } : { ...response, participation: { hasParticipated: false } };
 
-                const upvotesCast = await db.collection(databaseCollections['scratch-jam-upvotes']).countDocuments({ jam: ObjectId(jamId), 'meta.upvotedBy': username });
+                const upvotesCast = await Upvotes.countDocuments({ jam: ObjectId(jamId), 'meta.upvotedBy': username });
                 response = { ...response, remainingUpvotes: MAXIMUM_UPVOTES_PER_JAM - upvotesCast };
             }
 
@@ -549,10 +554,10 @@ export function getScratchGameJamStatistics(db, jamId, username = undefined) {
     });
 }
 
-export function getScratchGameJamSubmissionUpvotes(db, jamId, project, username = undefined) {
+export function getScratchGameJamSubmissionUpvotes(jamId, project, username = undefined) {
     return new Promise(async (resolve, reject) => {
         try {
-            const upvotesCursor = await db.collection(databaseCollections['scratch-jam-upvotes']).find({ jam: ObjectId(jamId), project: Number(project) });
+            const upvotesCursor = await Upvotes.find({ jam: ObjectId(jamId), project: Number(project) });
             const upvotes = await upvotesCursor.toArray();
 
             let response = { count: upvotes.length || 0 };
@@ -568,19 +573,19 @@ export function getScratchGameJamSubmissionUpvotes(db, jamId, project, username 
     });
 }
 
-export function saveScratchGameJamSubmissionUpvote(db, jamId, project, username) {
+export function saveScratchGameJamSubmissionUpvote(jamId, project, username) {
     return new Promise(async (resolve, reject) => {
         try {
-            const jam = await db.collection(databaseCollections['scratch-jams']).findOne({ _id: ObjectId(jamId) });
+            const jam = await Jams.findOne({ _id: ObjectId(jamId) });
             if (!jam) return reject({ identifier: 'notFound', message: 'The requested game jam could not be found' });
 
-            const remainingUpvotes = MAXIMUM_UPVOTES_PER_JAM - (await db.collection(databaseCollections['scratch-jam-upvotes']).countDocuments({ jam: ObjectId(jamId), 'meta.upvotedBy': username }));
+            const remainingUpvotes = MAXIMUM_UPVOTES_PER_JAM - (await Upvotes.countDocuments({ jam: ObjectId(jamId), 'meta.upvotedBy': username }));
             if (remainingUpvotes === 0) return reject({ identifier: 'upvoteQuotaHit', message: `You cannot upvote more than ${MAXIMUM_UPVOTES_PER_JAM} submissions per game jam` });
 
-            if ((await db.collection(databaseCollections['scratch-jam-upvotes']).countDocuments({ jam: ObjectId(jamId), project: Number(project), 'meta.upvotedBy': username })) > 0)
+            if ((await Upvotes.countDocuments({ jam: ObjectId(jamId), project: Number(project), 'meta.upvotedBy': username })) > 0)
                 return reject({ identifier: 'alreadyUpvoted', message: 'You have already upvoted the given submission in the given game jam' });
 
-            await db.collection(databaseCollections['scratch-jam-upvotes']).insertOne({ jam: ObjectId(jamId), project: Number(project), meta: { upvoted: new Date(), upvotedBy: username } });
+            await Upvotes.insertOne({ jam: ObjectId(jamId), project: Number(project), meta: { upvoted: new Date(), upvotedBy: username } });
 
             resolve();
         } catch (error) {
@@ -589,14 +594,14 @@ export function saveScratchGameJamSubmissionUpvote(db, jamId, project, username)
     });
 }
 
-export function removeScratchGameJamSubmissionUpvote(db, jamId, project, username) {
+export function removeScratchGameJamSubmissionUpvote(jamId, project, username) {
     return new Promise(async (resolve, reject) => {
         try {
-            const jam = await db.collection(databaseCollections['scratch-jams']).findOne({ _id: ObjectId(jamId) });
+            const jam = await Jams.findOne({ _id: ObjectId(jamId) });
             if (!jam) return reject({ identifier: 'notFound', message: 'The requested game jam could not be found' });
 
-            await db.collection(databaseCollections['scratch-jam-upvotes']).deleteOne({ jam: ObjectId(jamId), project: Number(project), 'meta.upvotedBy': username });
-            console.log(project, username)
+            await Upvotes.deleteOne({ jam: ObjectId(jamId), project: Number(project), 'meta.upvotedBy': username });
+            console.log(project, username);
             resolve();
         } catch (error) {
             reject(error);
@@ -604,11 +609,11 @@ export function removeScratchGameJamSubmissionUpvote(db, jamId, project, usernam
     });
 }
 
-export function removeScratchGameJamSubmission(db, jamId, project) {
+export function removeScratchGameJamSubmission(jamId, project) {
     return new Promise(async (resolve, reject) => {
         try {
-            await db.collection(databaseCollections['scratch-jam-upvotes']).deleteMany({ jam: ObjectId(jamId), project: Number(project) });
-            await db.collection(databaseCollections['scratch-jam-submissions']).deleteOne({ jam: ObjectId(jamId), project: Number(project) });
+            await Upvotes.deleteMany({ jam: ObjectId(jamId), project: Number(project) });
+            await Submissions.deleteOne({ jam: ObjectId(jamId), project: Number(project) });
             resolve();
         } catch (error) {
             reject(error);

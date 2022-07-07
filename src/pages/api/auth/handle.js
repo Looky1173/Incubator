@@ -2,13 +2,8 @@ import { withIronSessionApiRoute } from 'iron-session/next';
 import { sessionOptions } from '@constants';
 import { getUserData, createUser } from '@database/users';
 
-import clientPromise from '@database';
-
 export default withIronSessionApiRoute(async (req, res) => {
-    const client = await clientPromise;
-    const Database = client.db();
-
-    // The user is back from Hampton's authentication service
+    // The user is back from Scratch Auth
     const privateCode = req.query.privateCode;
     const websiteURL = process.env.WEBSITE_URL;
 
@@ -21,7 +16,6 @@ export default withIronSessionApiRoute(async (req, res) => {
 
     if (authData.valid) {
         // Get the proper case of the username instead of URL case
-
         let scratchResponse = await fetch(`https://api.scratch.mit.edu/users/${authData.username}/`).catch((e) => {
             console.log(e);
             return res.redirect(`${websiteURL}/?auth-error=1`);
@@ -32,10 +26,10 @@ export default withIronSessionApiRoute(async (req, res) => {
             return res.json({ error: { status: 404, code: 'userNotFound', detail: 'This user could not be found on Scratch.' } });
         }
 
-        let user = await getUserData(Database, scratchData.username);
+        let user = await getUserData(scratchData.username);
         if (!user) {
             let now = new Date();
-            await createUser(Database, {
+            await createUser({
                 name: scratchData.username,
                 meta: {
                     updated: now,
@@ -55,7 +49,7 @@ export default withIronSessionApiRoute(async (req, res) => {
         await req.session.save();
         res.redirect(websiteURL);
     } else {
-        // Failed FluffyScratch auth
+        // Failed Scratch Auth
         res.redirect(`${websiteURL}/?auth-error=0`);
     }
 }, sessionOptions);
