@@ -202,7 +202,8 @@ function FeedbackManager({ jamId, projectId, projectData, isOrganizer, user }) {
         multiFetcher,
     );
 
-    const isLoadingData = (leaveFeedback && isLoadingFeedbackEditor) || (!leaveFeedback && !actualFeedbackData && feedbackData?.length !== 0);
+    const isLoadingData = (leaveFeedback && !data) || (!leaveFeedback && !actualFeedbackData && feedbackData?.length !== 0);
+    const noFeedbackToBeSelected = leaveFeedback && filteredComments?.length === 0;
 
     const [toast] = useToast();
 
@@ -245,7 +246,11 @@ function FeedbackManager({ jamId, projectId, projectData, isOrganizer, user }) {
                     {leaveFeedback && <Help type="feedback" />}
                 </Flex>
                 {canLeaveFeedback && (
-                    <Button onClick={() => (leaveFeedback ? saveFeedback() : toggleFeedback())} variant={leaveFeedback ? 'accent' : 'base'} disabled={isSavingFeedback}>
+                    <Button
+                        onClick={() => (leaveFeedback && !noFeedbackToBeSelected ? saveFeedback() : toggleFeedback())}
+                        variant={leaveFeedback && !noFeedbackToBeSelected ? 'accent' : 'base'}
+                        disabled={isSavingFeedback || (leaveFeedback && isLoadingData)}
+                    >
                         {leaveFeedback ? 'Done' : 'Leave feedback'}
                     </Button>
                 )}
@@ -284,9 +289,14 @@ function FeedbackManager({ jamId, projectId, projectData, isOrganizer, user }) {
                             ))}
                         </>
                     )}
-                    {feedbackData?.length === 0 && (
+                    {!leaveFeedback && feedbackData?.length === 0 && (
                         <Text variant="subtle" align="center" css={{ my: '$4' }}>
                             No feedback yet...
+                        </Text>
+                    )}
+                    {noFeedbackToBeSelected && (
+                        <Text variant="subtle" align="center" css={{ my: '$4' }}>
+                            No comments to choose from. Press "Help" for more information!
                         </Text>
                     )}
                 </>
