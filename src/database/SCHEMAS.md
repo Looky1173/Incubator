@@ -68,7 +68,7 @@
     teamSubmission?: Boolean,
     team?: ObjectId(), // The `ObjectId()` of the team submitting the project
     feedback?: [
-        { name: String, comment: Number }, // `name`: The username of the host to whom the feedback belongs; `comment`: The Scratch comment ID which represents the feedback
+        { author: String, comment: Number }, // `author`: The username of the host to whom the feedback belongs; `comment`: The Scratch comment ID which represents the feedback
         ...
     ],
     meta: {

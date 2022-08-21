@@ -42,7 +42,22 @@ import {
     styled,
     keyframes,
 } from '@design-system';
-import { Layout, Countdown, Thumbnail, TextEditor, ToastError, ToastSuccess, ScratchEmbed, AboutScratchJams, Submission, Select, SelectItem, UpvoteManager } from '@components';
+import {
+    Layout,
+    Countdown,
+    Thumbnail,
+    TextEditor,
+    ToastError,
+    ToastSuccess,
+    ScratchEmbed,
+    AboutScratchJams,
+    Submission,
+    Select,
+    SelectItem,
+    UpvoteManager,
+    FeedbackManager,
+    Report,
+} from '@components';
 import {
     InfoCircledIcon,
     PersonIcon,
@@ -62,7 +77,7 @@ import {
     ExternalLinkIcon,
 } from '@radix-ui/react-icons';
 import { useJams, useUser, useJamHosts, useToast } from '@hooks';
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import { isObject } from '@utils/object';
@@ -582,6 +597,19 @@ function NewSubmission({ onBackToSubmissions, jamId, mutate }) {
         setProjectId(projectUrl.match(projectRegex)[1]);
     }, [projectUrl]);
 
+    const submitInput = useRef();
+
+    useEffect(() => {
+        submitInput.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const scrollTimer = setTimeout(() => {
+            submitInput.current.focus();
+        }, 500);
+
+        return () => {
+            clearTimeout(scrollTimer);
+        };
+    }, []);
+
     async function submitProject() {
         setSubmitting(true);
 
@@ -646,6 +674,7 @@ function NewSubmission({ onBackToSubmissions, jamId, mutate }) {
                         id="project-url"
                         css={{ flexGrow: 1 }}
                         disabled={submitting}
+                        ref={submitInput}
                     />
                     <Button variant="accent" disabled={!isProjectIdValid || submitting} block={{ '@initial': true, '@bp1': false }} onClick={submitProject}>
                         Submit project
@@ -684,7 +713,8 @@ function JamSubmissions({ onBackToSubmissions, onLoadingChange, jam, isOrganizer
     const isReachingEnd = isEmpty || (data && data[data.length - 1]?.length < LIMIT);
     const isRefreshing = isValidating && data && data.length === size;
 
-    const { data: projectData, error: projectError } = useSWR(projectId ? `/api/scratch-jams/${jam?._id}/submissions/${projectId}` : null, fetcher);
+    const { data: projectData, error: projectError } = useSWR(projectId ? `/api/scratch-jams/${jam?._id}/submissions/${projectId}` : null);
+    const { data: project } = useSWR(projectId ? `/api/projects/${projectId}` : null);
 
     useEffect(() => {
         if (!router.isReady) return onLoadingChange(true);
@@ -715,7 +745,7 @@ function JamSubmissions({ onBackToSubmissions, onLoadingChange, jam, isOrganizer
             });
         } else if (res.success) {
             toast({
-                customContent: <ToastSuccess>The submission {projectData.title} has been removed from this game jam</ToastSuccess>,
+                customContent: <ToastSuccess>The submission {project?.title} has been removed from this game jam</ToastSuccess>,
                 variant: 'success',
                 duration: 10000,
             });
@@ -732,7 +762,7 @@ function JamSubmissions({ onBackToSubmissions, onLoadingChange, jam, isOrganizer
             <AlertDialog open={removeProjectDialog.open} onOpenChange={(open) => setRemoveProjectDialog({ ...removeProjectDialog, open: open })}>
                 <AlertDialogContent>
                     <AlertDialogTitle>
-                        {viewingOwnSubmission ? 'Are you sure you want to remove your submission from this game jam?' : `You are about to remove the submission ${projectData?.title}`}
+                        {viewingOwnSubmission ? 'Are you sure you want to remove your submission from this game jam?' : `You are about to remove the submission ${project?.title}`}
                     </AlertDialogTitle>
                     <AlertDialogDescription>
                         <>
@@ -740,7 +770,7 @@ function JamSubmissions({ onBackToSubmissions, onLoadingChange, jam, isOrganizer
                             <Flex justify="center" css={{ my: '$2' }}>
                                 <Separator size="2" />
                             </Flex>
-                            All of the votes and feedback left by hosts associated with the submission {projectData?.title} will be permanently deleted.
+                            All of the votes and feedback left by hosts associated with the submission {project?.title} will be permanently deleted.
                         </>
                     </AlertDialogDescription>
                     <Flex gap="2" wrap="wrap">
@@ -797,6 +827,10 @@ function JamSubmissions({ onBackToSubmissions, onLoadingChange, jam, isOrganizer
                                 )}
                             </Flex>
                         )}
+                        <Flex justify="center" css={{ my: '$2' }}>
+                            <Separator size="2" />
+                        </Flex>
+                        <FeedbackManager jamId={jam?._id} projectId={projectId} projectData={projectData} user={user} isOrganizer={isOrganizer} />
                     </>
                 ) : (
                     <Card variant="danger">
@@ -1442,12 +1476,9 @@ function ScratchJam({ fallback }) {
                         ) : (
                             <Skeleton height="20rem" />
                         )}
-                        <Button size="small" variant="neutral" css={{ mt: '$2' }}>
-                            <Box css={{ mr: '$2', transform: 'translateY(2px)' }}>
-                                <ExclamationTriangleIcon width={20} height={20} />
-                            </Box>
-                            Report
-                        </Button>
+                        <Box css={{ mt: '$2' }}>
+                            <Report type="jam" data={{ jam: data?.name }} />
+                        </Box>
                     </Box>
                     <Box
                         css={{

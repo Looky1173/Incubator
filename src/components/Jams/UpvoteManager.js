@@ -1,13 +1,12 @@
-import { Box, Button, Card, Flex, Heading, Badge, Link, Text, Skeleton } from '@design-system';
-import { useState } from 'react';
+import { Button, Badge } from '@design-system';
 import stopClickPropagation from '@utils/stop-click-propagation';
 import useSWR from 'swr';
-import { fetcher, MAXIMUM_UPVOTES_PER_JAM } from '@constants';
+import { MAXIMUM_UPVOTES_PER_JAM } from '@constants';
 import { useToast } from '@hooks';
 import { ToastError } from '@components';
 
 function UpvoteManager({ jamId, projectId, remainingUpvotes, user, block = true }) {
-    const { data, mutate } = useSWR(projectId && jamId ? `/api/scratch-jams/${jamId}/submissions/${projectId}/upvotes` : null, fetcher);
+    const { data, mutate } = useSWR(projectId && jamId ? `/api/scratch-jams/${jamId}/submissions/${projectId}/upvotes` : null);
 
     const [toast] = useToast();
 

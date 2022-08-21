@@ -49,6 +49,13 @@ const getJamsHostedByUsername = (username) => {
     });
 };
 
+export async function ensureArchivedJamIntegrity(req, res, jam) {
+    const _jam = await getScratchGameJam(jam, req.session?.user?.name);
+    const isAdmin = (await getUserData(req.session?.user?.name)).admin;
+    if (_jam.meta?.archived === true && !isAdmin)
+        return res.status(403).json({ error: { identifier: 'insufficientPermissions', message: 'You do not have permission to access archived game jams. Only administrators can do that.' } });
+}
+
 export function getScratchGameJams(limit = 40, offset = 0, filters = {}, username) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -614,6 +621,33 @@ export function removeScratchGameJamSubmission(jamId, project) {
         try {
             await Upvotes.deleteMany({ jam: ObjectId(jamId), project: Number(project) });
             await Submissions.deleteOne({ jam: ObjectId(jamId), project: Number(project) });
+            resolve();
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+export function getScratchGameJamSubmissionFeedback(jamId, project) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const submission = await Submissions.findOne({ jam: ObjectId(jamId), project: Number(project) });
+            resolve(submission.feedback || []);
+        } catch (error) {
+            reject(error);
+        }
+    });
+}
+
+export function saveScratchGameJamSubmissionFeedback(jamId, projectId, feedback) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const submission = await Submissions.findOne({ jam: ObjectId(jamId), project: Number(projectId) });
+            // Make sure that the specified submission exists
+            if (!submission) return reject({ identifier: 'notFound', message: 'The specified submission does not exist' });
+
+            await Submissions.updateOne({ jam: ObjectId(jamId), project: Number(projectId) }, { $set: { feedback: feedback } });
+
             resolve();
         } catch (error) {
             reject(error);
