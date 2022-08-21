@@ -544,7 +544,16 @@ export function getScratchGameJamStatistics(jamId, username = undefined) {
             const numberOfSubmissions = await Submissions.countDocuments({ jam: ObjectId(jamId) });
             const numberOfUpvotes = await Upvotes.countDocuments({ jam: ObjectId(jamId) });
 
-            let response = { submissions: numberOfSubmissions, upvotes: numberOfUpvotes, feedback: 0 };
+            const submissionsCursor = await Submissions.find({ jam: ObjectId(jamId) });
+            const submissions = await submissionsCursor.toArray();
+
+            let numberOfFeedback = 0;
+
+            submissions.forEach((submission) => {
+                numberOfFeedback += submission?.feedback?.length || 0;
+            });
+
+            let response = { submissions: numberOfSubmissions, upvotes: numberOfUpvotes, feedback: numberOfFeedback };
 
             if (username) {
                 const participation = await Submissions.findOne({ jam: ObjectId(jamId), author: username });
