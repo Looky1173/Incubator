@@ -63,7 +63,7 @@ function Comment({ content, projectId, selected = false, toggleSelected, canBeSe
                     <Flex gap="2">
                         <Box>
                             <Avatar css={{ width: '4rem', minWidth: '4rem', borderRadius: '$4' }}>
-                                <AvatarImage src={`/api/users/${content.author.username}/picture`} alt={`${content.author.username}'s profile picture`} />
+                                <AvatarImage src={`/api/users/${username}/picture`} alt={`${username}'s profile picture`} />
                                 <AvatarFallback delayMs={2000}>
                                     <AvatarIcon width={40} height={40} />
                                 </AvatarFallback>
@@ -71,7 +71,7 @@ function Comment({ content, projectId, selected = false, toggleSelected, canBeSe
                         </Box>
                         <Flex direction="column" gap="1" css={{ width: '100%' }}>
                             <Text bold css={{ color: selected && '$success11' }}>
-                                {content.author.username}
+                                {username}
                             </Text>
 
                             <Card
@@ -159,7 +159,7 @@ function FeedbackManager({ jamId, projectId, projectData, isOrganizer, user }) {
     const LIMIT = 20;
 
     const { data, error, mutate, size, setSize, isValidating } = useSWRInfinite(
-        leaveFeedback === true ? (index) => `/api/users/${user?.name}/projects/${projectId}/comments?offset=${index * LIMIT}&limit=${LIMIT}` : null,
+        leaveFeedback === true ? (index) => `/api/users/${projectAuthor}/projects/${projectId}/comments?offset=${index * LIMIT}&limit=${LIMIT}` : null,
         fetchJson,
         {
             initialSize: 10,
