@@ -37,12 +37,12 @@ function Reply({ content, selected }) {
     );
 }
 
-function Comment({ content, projectId, selected = false, toggleSelected, canBeSelected = false, enableReporting = true }) {
+function Comment({ content, projectId, projectAuthor, selected = false, toggleSelected, canBeSelected = false, enableReporting = true }) {
     const username = content?.author?.username;
-    const REPLIES_LIMIT = 2;
-    const { data: replies } = useSWR(content.reply_count > 0 && !content.error ? `/api/users/${username}/projects/${projectId}/comments/${content.id}/replies?offset=0&limit=${REPLIES_LIMIT}` : null);
+    const REPLIES_LIMIT = 3;
+    const { data: replies } = useSWR(content.reply_count > 0 && !content.error ? `/api/users/${projectAuthor}/projects/${projectId}/comments/${content.id}/replies?offset=0&limit=${REPLIES_LIMIT}` : null);
     const { data: replyOverflow } = useSWR(
-        replies?.length === REPLIES_LIMIT ? `/api/users/${username}/projects/${projectId}/comments/${content.id}/replies?offset=${REPLIES_LIMIT}&limit=${REPLIES_LIMIT}` : null,
+        replies?.length === REPLIES_LIMIT ? `/api/users/${projectAuthor}/projects/${projectId}/comments/${content.id}/replies?offset=${REPLIES_LIMIT}&limit=${REPLIES_LIMIT}` : null,
     );
 
     return (
@@ -101,16 +101,12 @@ function Comment({ content, projectId, selected = false, toggleSelected, canBeSe
                             {content.reply_count > 0 && (
                                 <Flex direction="column" gap="2" css={{ mt: '$1', maskImage: !replies && 'linear-gradient(to bottom, rgba(0, 0, 0, 1.0) 30%, transparent 90%)' }}>
                                     {replies ? (
-                                        replies.map((reply) => (
-                                            <>
-                                                <Reply content={reply} selected={selected} />
-                                            </>
-                                        ))
+                                        replies.map((reply, index) => <Reply content={reply} selected={selected} key={index} />)
                                     ) : (
                                         <>
                                             {[...Array(3)].map((value, index) => (
-                                                <Box>
-                                                    <Skeleton height="8rem" key={index} />
+                                                <Box key={index}>
+                                                    <Skeleton height="8rem" />
                                                 </Box>
                                             ))}
                                         </>
@@ -261,30 +257,23 @@ function FeedbackManager({ jamId, projectId, projectData, isOrganizer, user }) {
                     {canLeaveFeedback &&
                         !isLoadingFeedbackEditor &&
                         filteredComments.map((comment, index) => (
-                            <>
-                                <Comment
-                                    content={comment}
-                                    projectId={projectId}
-                                    selected={selectedComments?.includes(comment.id) || false}
-                                    toggleSelected={toggleSelectedComment}
-                                    canBeSelected={true}
-                                    enableReporting={false}
-                                    key={index}
-                                />
-                            </>
+                            <Comment
+                                content={comment}
+                                projectId={projectId}
+                                projectAuthor={projectAuthor}
+                                selected={selectedComments?.includes(comment.id) || false}
+                                toggleSelected={toggleSelectedComment}
+                                canBeSelected={true}
+                                enableReporting={false}
+                                key={index}
+                            />
                         ))}
-                    {!leaveFeedback &&
-                        actualFeedbackData &&
-                        actualFeedbackData.map((comment, index) => (
-                            <>
-                                <Comment content={comment} projectId={projectId} key={index} />
-                            </>
-                        ))}
+                    {!leaveFeedback && actualFeedbackData && actualFeedbackData.map((comment, index) => <Comment content={comment} projectId={projectId} projectAuthor={projectAuthor} key={index} />)}
                     {isLoadingData && (
                         <>
                             {[...Array(3)].map((value, index) => (
-                                <Box>
-                                    <Skeleton height="8rem" key={index} />
+                                <Box key={index}>
+                                    <Skeleton height="8rem" />
                                 </Box>
                             ))}
                         </>
