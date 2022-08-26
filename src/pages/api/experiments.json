@@ -1,5 +1,10 @@
 [
     {
+        "title": "Scratch game jams",
+        "slug": "scratch-jams",
+        "description": "Create and participate in exciting Scratch game jams (competitions)!"
+    },
+    {
         "title": "Message Count Tracker",
         "slug": "message-count-tracker",
         "description": "Keeps historical data of Scratchers' message counts over time and generates a leaderboard of the Scratchers with the most message counts.",
