@@ -30,7 +30,7 @@ function Reply({ content, selected }) {
                 </Text>
 
                 <Card css={{ p: '$4' }} className={selected && selectedCommentCSS}>
-                    <Text variant="inherit">{content.content}</Text>
+                    <Text variant="inherit" dangerouslySetInnerHTML={{__html: content.content}} />
                 </Card>
             </Flex>
         </Flex>
@@ -79,7 +79,7 @@ function Comment({ content, projectId, projectAuthor, selected = false, toggleSe
                                 className={selected && selectedCommentCSS}
                                 onClick={() => canBeSelected && toggleSelected(content.id)}
                             >
-                                <Text variant="inherit">{content.content}</Text>
+                                <Text variant="inherit" dangerouslySetInnerHTML={{__html: content.content}} />
                                 {enableReporting && (
                                     <Box css={{ position: 'absolute', top: 5, right: 5 }}>
                                         <Report
