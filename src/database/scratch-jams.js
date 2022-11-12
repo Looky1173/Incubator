@@ -51,7 +51,7 @@ const getJamsHostedByUsername = (username) => {
 
 export async function ensureArchivedJamIntegrity(req, res, jam) {
     const _jam = await getScratchGameJam(jam, req.session?.user?.name);
-    const isAdmin = (await getUserData(req.session?.user?.name)).admin;
+    const isAdmin = (await getUserData(req.session?.user?.name))?.admin;
     if (_jam.meta?.archived === true && !isAdmin)
         return res.status(403).json({ error: { identifier: 'insufficientPermissions', message: 'You do not have permission to access archived game jams. Only administrators can do that.' } });
 }
